@@ -1,7 +1,7 @@
 import Dexie, { type Table } from 'dexie';
 export type Subtask={id:string;title:string;done:boolean};
 export type Task = {id:string;title:string;done:boolean;createdAt:number;updatedAt:number;source?:string;firstStep?:string;minutes?:number;priority?:'high'|'normal'|'low';plannedFor?:string;subtasks?:Subtask[];deletedAt?:number;deferredUntil?:string;deferReason?:string;lastReviewedAt?:number;focusLog?:{role:'user'|'assistant';text:string}[];sortOrder?:number;progressNote?:string;lastStartedAt?:number;completedAt?:number};
-export type Entry = {id:string;date:string;text:string;createdAt:number};
+export type Entry = {id:string;date:string;text:string;createdAt:number;updatedAt?:number;deletedAt?:number};
 export type Focus = {id:string;taskId:string;startedAt:number;endedAt?:number;outcome?:string};
 class QuietDB extends Dexie { tasks!:Table<Task,string>; entries!:Table<Entry,string>; focus!:Table<Focus,string>; constructor(){super('quiet-day');this.version(1).stores({tasks:'id,updatedAt,done',entries:'id,date,createdAt',focus:'id,taskId,startedAt'});} }
 export const db=new QuietDB();
