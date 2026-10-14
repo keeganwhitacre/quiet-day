@@ -136,3 +136,16 @@ footer{border-color:var(--qd-line)}
 .taskCompact.taskDone{opacity:.7}
 [data-theme=dark] .taskMenuPanel{background:var(--qd-surface)}
 @media(max-width:600px){.taskCompact .task{padding:12px 10px;gap:8px}.taskCompact .taskTitle{font-size:13.5px}.taskCompact .startTask,.taskMenu summary{width:31px;height:31px}.compactSubtasks{padding-left:40px}}
+
+
+/* A small moment of closure before completed tasks leave Today. */
+.taskCompact{transform-origin:center top;will-change:opacity,transform}
+.taskCompact.isFinishing .check.completed{background:#4b8b71;border-color:#4b8b71;animation:qd-check-pop .36s cubic-bezier(.2,1.7,.5,1)}
+.taskCompact.isFinishing .check svg{animation:qd-check-in .28s ease-out both}
+.taskCompact.isFinishing .taskContent .done{text-decoration:line-through;text-decoration-color:#8da99d;text-decoration-thickness:1.5px;color:#929a9f;transition:color .25s ease}
+.taskCompact.isFinishing .firstStep,.taskCompact.isFinishing .stepsSection,.taskCompact.isFinishing .taskActions{opacity:.28;transition:opacity .3s ease;pointer-events:none}
+.taskCompact.isLeaving{animation:qd-task-leave .34s ease-in forwards;pointer-events:none;overflow:hidden}
+@keyframes qd-check-pop{0%{transform:scale(.78)}52%{transform:scale(1.16)}100%{transform:scale(1)}}
+@keyframes qd-check-in{from{opacity:0;transform:scale(.6)}to{opacity:1;transform:scale(1)}}
+@keyframes qd-task-leave{0%{opacity:1;max-height:300px;margin-bottom:0;transform:translateY(0)}65%{opacity:.15;transform:translateY(-5px)}100%{opacity:0;max-height:0;padding-top:0;padding-bottom:0;margin-top:-8px;border-width:0;transform:translateY(-8px)}}
+@media(prefers-reduced-motion:reduce){.taskCompact.isFinishing .check.completed,.taskCompact.isFinishing .check svg,.taskCompact.isLeaving{animation:none}.taskCompact.isLeaving{opacity:0}.taskCompact.isFinishing .taskContent .done{transition:none}}
