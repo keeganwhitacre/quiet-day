@@ -21,3 +21,23 @@
 [data-theme=dark] .plan,[data-theme=dark] .settingsFields input,[data-theme=dark] .stuck select{background:#24272e;color:#e9ebef;border-color:#383e46}
 [data-theme=dark] .planItem{border-color:#383e46}
 @media(max-width:600px){.buttonRow{justify-content:flex-end}.plan{padding:16px}}
+
+.taskBlock{border-bottom:1px solid #e8e9eb}.taskBlock .task{border:0}
+.firstStep{display:block;font-size:12px;color:#868b94;margin-top:5px;line-height:1.45}
+.subtasks{padding:0 12px 16px 36px;display:flex;flex-direction:column;gap:10px}
+.subtask{display:flex;align-items:center;gap:11px;font-size:13px;color:#606772}
+.subtask input{width:17px;height:17px;accent-color:#667d98}
+.subtasks .textButton{margin-top:6px}
+.taskBlock .startTask{border-radius:10px}
+.focusChat{max-width:510px;margin:28px auto;text-align:left}
+.focusChat p{white-space:pre-wrap;line-height:1.6;font-size:14px;border-radius:16px;padding:12px 15px;margin:10px 0}
+.focusUser{background:#f0f2f5;margin-left:15%!important}
+.focusAssistant{background:#f8f9fa;border:1px solid #e9eaee;margin-right:10%!important}
+.focusForm{display:flex;gap:9px;align-items:stretch;margin-top:18px}
+.focusForm input{min-width:0;flex:1;border:1px solid #dfe3e8;border-radius:14px;padding:12px 14px;outline:none;background:#fff;color:inherit}
+.focusForm input:focus{border-color:#96a9c2}
+[data-theme=dark] .taskBlock{border-color:#363a40}
+[data-theme=dark] .focusUser{background:#333840}
+[data-theme=dark] .focusAssistant{background:#24272e;border-color:#393e48}
+[data-theme=dark] .focusForm input{background:#24272e;border-color:#393e48}
+@media(max-width:600px){.task{gap:8px}.task .startTask{padding:8px}.subtasks{padding-left:25px}}
