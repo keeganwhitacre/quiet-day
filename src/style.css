@@ -41,3 +41,52 @@
 [data-theme=dark] .focusAssistant{background:#24272e;border-color:#393e48}
 [data-theme=dark] .focusForm input{background:#24272e;border-color:#393e48}
 @media(max-width:600px){.task{gap:8px}.task .startTask{padding:8px}.subtasks{padding-left:25px}}
+
+
+/* Personal-workspace refresh: softened chrome, compact cards and clear controls. */
+:root{--qd-bg:#f7f8fa;--qd-surface:#fff;--qd-ink:#252933;--qd-muted:#777e8a;--qd-line:#e6e9ee;--qd-tint:#eef1f6;color:var(--qd-ink);background:var(--qd-bg)}
+.shell{max-width:760px;padding:0 26px}
+header{height:88px}.wordmark{font-size:16px;letter-spacing:-.35px;font-weight:680}.date{font-size:12px;color:var(--qd-muted)}
+header .iconBtn{background:#fff;border:1px solid var(--qd-line);border-radius:13px;padding:10px;display:grid;place-items:center;color:#727b88}
+nav{margin:3px 0 0;display:flex;width:100%;gap:4px;border:1px solid var(--qd-line);border-radius:17px;background:#eceff3;padding:5px}
+nav button{flex:1;padding:12px 10px;border-radius:12px;border:0!important;font-size:13px;color:#6d7580;font-weight:500;transition:background .12s ease,color .12s ease}
+nav button.active{color:var(--qd-ink);background:#fff;box-shadow:0 1px 4px rgba(23,34,53,.08)}
+.screen{padding-top:38px}.eyebrow{font-size:11px;letter-spacing:.3px;color:#858b96;margin-bottom:8px}
+h1{font-size:31px;font-weight:690;letter-spacing:-1.1px}h2{font-weight:650}
+.muted,.intro{color:var(--qd-muted)}.intro{margin:9px 0 24px}
+.todayHeading{display:flex;justify-content:space-between;align-items:center;gap:12px}
+.roundUtility,.utilityBar button,.stepsButton,.taskMore button,.carryItem button,.addStep{font-size:12px;font-weight:550;border:1px solid var(--qd-line);color:#586474;background:#fff;border-radius:12px;padding:9px 12px;display:inline-flex;align-items:center;gap:7px}
+.roundUtility{border-radius:13px}
+.addRow{margin:10px 0 24px;background:var(--qd-surface);border:1px solid var(--qd-line);border-radius:17px;box-shadow:0 2px 10px rgba(40,50,70,.025)}
+.addRow input{font-size:14px;padding:16px 17px}
+.taskList{display:flex;flex-direction:column;gap:10px}
+.taskBlock{background:var(--qd-surface);border:1px solid var(--qd-line);border-radius:17px;overflow:hidden;box-shadow:0 2px 8px rgba(40,50,70,.025)}
+.taskBlock .task{padding:14px 14px 9px 16px;min-height:58px;gap:12px;align-items:start}
+.taskContent{flex:1;min-width:0;padding-top:3px}.taskTitle{font-size:14px;font-weight:560;line-height:1.4}
+.priorityMark{font-size:10px;color:#586e90;background:#edf1f7;padding:3px 7px;border-radius:8px;margin-left:10px;font-weight:600}
+.check{margin-top:3px;width:20px;height:20px}
+.startTask{border-radius:10px;padding:9px;color:#8b919b;flex-shrink:0}.startTask:hover{background:#f1f3f7}
+.firstStep{font-size:12px;color:#9298a2;line-height:1.5;margin-top:5px}
+.stepsSection{padding:0 14px 9px 48px}.stepsButton{background:#f2f4f7;border:0;border-radius:10px;padding:7px 11px;color:#697586}
+.subtasks{padding:13px 0 8px;gap:13px}.subtask{font-size:13px}.subtasks .addStep{align-self:flex-start;background:none;margin-top:1px}
+.taskMore{display:flex;justify-content:flex-end;gap:7px;padding:0 13px 10px}.taskMore button{border:0;background:transparent;padding:5px 8px;color:#9aa0aa;font-size:11px}
+.taskMore button:hover{background:#f3f5f8;color:#586474}
+.utilityBar{display:flex;gap:8px;flex-wrap:wrap;margin-top:21px}.utilityBar button{background:#fff;border-radius:12px;padding:10px 12px}
+.carryPanel{background:#edf2f9;border:1px solid #dfe7f2;border-radius:17px;margin:0 0 19px;overflow:hidden}
+.carryToggle{border:0;background:transparent;color:#4d617e;width:100%;padding:15px 16px;display:flex;justify-content:space-between;align-items:center;font-size:13px;font-weight:600}
+.carryToggle span{display:flex;align-items:center;gap:9px}
+.carryBody{padding:0 15px 13px}.carryBody p{font-size:12px;color:#75849a;margin:0 0 10px}
+.carryItem{border-top:1px solid #dce4ef;padding:11px 0;display:flex;align-items:center;justify-content:space-between;gap:10px;font-size:13px}
+.carryItem div{display:flex;flex-wrap:wrap;gap:6px}.carryItem button{padding:7px 9px;font-size:11px}
+.laterWrap{padding:16px 0}.laterWrap .carryItem{border-color:var(--qd-line)}
+.journal{background:#fff;border-radius:19px;border-color:var(--qd-line);min-height:230px}
+.primary,.secondary{border-radius:13px}
+footer{border-color:var(--qd-line)}
+[data-theme=dark]{--qd-bg:#191c22;--qd-surface:#242830;--qd-ink:#ebedf1;--qd-muted:#a1a8b2;--qd-line:#373e49;--qd-tint:#303641;color:var(--qd-ink);background:var(--qd-bg)}
+[data-theme=dark] nav{background:#2d333c;border-color:var(--qd-line)}
+[data-theme=dark] nav button.active,[data-theme=dark] header .iconBtn,[data-theme=dark] .taskBlock,[data-theme=dark] .addRow,[data-theme=dark] .roundUtility,[data-theme=dark] .utilityBar button,[data-theme=dark] .stepsButton,[data-theme=dark] .carryItem button{background:var(--qd-surface);color:var(--qd-ink);border-color:var(--qd-line)}
+[data-theme=dark] .carryPanel{background:#293749;border-color:#3b4960}
+[data-theme=dark] .carryToggle{color:#d0dcf1}[data-theme=dark] .carryItem{border-color:#42516a}
+[data-theme=dark] .taskMore button{color:#aab3c0}
+[data-theme=dark] .priorityMark{background:#343f50;color:#c3d4f0}
+@media(max-width:600px){.shell{padding:0 16px}header{height:73px}.date{display:none}.screen{padding-top:29px}h1{font-size:29px}.taskBlock .task{gap:8px;padding:13px 10px 8px 13px}.stepsSection{padding-left:43px}.taskMore{padding-right:9px}.carryItem{align-items:flex-start;flex-direction:column}}
