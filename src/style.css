@@ -149,3 +149,18 @@ footer{border-color:var(--qd-line)}
 @keyframes qd-check-in{from{opacity:0;transform:scale(.6)}to{opacity:1;transform:scale(1)}}
 @keyframes qd-task-leave{0%{opacity:1;max-height:300px;margin-bottom:0;transform:translateY(0)}65%{opacity:.15;transform:translateY(-5px)}100%{opacity:0;max-height:0;padding-top:0;padding-bottom:0;margin-top:-8px;border-width:0;transform:translateY(-8px)}}
 @media(prefers-reduced-motion:reduce){.taskCompact.isFinishing .check.completed,.taskCompact.isFinishing .check svg,.taskCompact.isLeaving{animation:none}.taskCompact.isLeaving{opacity:0}.taskCompact.isFinishing .taskContent .done{transition:none}}
+
+
+/* Installed-PWA touch behavior: keep the viewport stable when typing. */
+/* iOS auto-zooms focused form controls below a 16px computed font size. */
+@media (hover:none) and (pointer:coarse){
+ input,textarea,select,.journal,.addRow input,.editTask,.focusForm input,.settingsFields input,.focusInterval select,.stuck select,.eveningPanel textarea{
+  font-size:16px;
+ }
+}
+/* App chrome should behave like controls, not selectable web copy. */
+.shell{-webkit-user-select:none;user-select:none;-webkit-tap-highlight-color:transparent}
+.shell button,.shell nav,.shell summary,.shell label,.taskBlock{-webkit-touch-callout:none}
+.shell input,.shell textarea,.shell select,.shell [contenteditable="true"],.history article p{
+ -webkit-user-select:text;user-select:text;-webkit-touch-callout:default;
+}
