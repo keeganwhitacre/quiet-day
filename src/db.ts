@@ -1,0 +1,10 @@
+import Dexie, { type Table } from 'dexie';
+export type Task = {id:string;title:string;done:boolean;createdAt:number;updatedAt:number;source?:string};
+export type Entry = {id:string;date:string;text:string;createdAt:number};
+export type Focus = {id:string;taskId:string;startedAt:number;endedAt?:number;outcome?:string};
+class QuietDB extends Dexie { tasks!:Table<Task,string>; entries!:Table<Entry,string>; focus!:Table<Focus,string>; constructor(){super('quiet-day');this.version(1).stores({tasks:'id,updatedAt,done',entries:'id,date,createdAt',focus:'id,taskId,startedAt'});} }
+export const db=new QuietDB();
+export const uid=()=>crypto.randomUUID();
+export const localDate=()=>{const d=new Date();return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`};
+export async function exportData(){return {version:1,exportedAt:new Date().toISOString(),tasks:await db.tasks.toArray(),entries:await db.entries.toArray(),focus:await db.focus.toArray()};}
+export async function importData(data:unknown){if(!data||typeof data!=='object')throw new Error('Invalid backup');const d=data as Record<string,unknown>;if(d.version!==1||!Array.isArray(d.tasks)||!Array.isArray(d.entries)||!Array.isArray(d.focus))throw new Error('Unsupported backup');const tasks=d.tasks as Task[], entries=d.entries as Entry[], focus=d.focus as Focus[];if(tasks.some(x=>typeof x.id!=='string'||typeof x.title!=='string'||typeof x.done!=='boolean')||entries.some(x=>typeof x.id!=='string'||typeof x.text!=='string'||typeof x.date!=='string')||focus.some(x=>typeof x.id!=='string'||typeof x.startedAt!=='number'))throw new Error('Invalid records');await db.transaction('rw',db.tasks,db.entries,db.focus,async()=>{await db.tasks.clear();await db.entries.clear();await db.focus.clear();await db.tasks.bulkPut(tasks);await db.entries.bulkPut(entries);await db.focus.bulkPut(focus);});}
