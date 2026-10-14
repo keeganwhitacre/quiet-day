@@ -139,7 +139,7 @@ footer{border-color:var(--qd-line)}
 
 
 /* A small moment of closure before completed tasks leave Today. */
-.taskCompact{transform-origin:center top;will-change:opacity,transform}
+.taskCompact{transform-origin:center top}
 .taskCompact.isFinishing .check.completed{background:#4b8b71;border-color:#4b8b71;animation:qd-check-pop .36s cubic-bezier(.2,1.7,.5,1)}
 .taskCompact.isFinishing .check svg{animation:qd-check-in .28s ease-out both}
 .taskCompact.isFinishing .taskContent .done{text-decoration:line-through;text-decoration-color:#8da99d;text-decoration-thickness:1.5px;color:#929a9f;transition:color .25s ease}
@@ -163,4 +163,19 @@ footer{border-color:var(--qd-line)}
 .shell button,.shell nav,.shell summary,.shell label,.taskBlock{-webkit-touch-callout:none}
 .shell input,.shell textarea,.shell select,.shell [contenteditable="true"],.history article p{
  -webkit-user-select:text;user-select:text;-webkit-touch-callout:default;
+}
+
+/* Menus must stack above adjacent task cards, including on iOS Safari. */
+.taskList{position:relative;isolation:isolate}
+.taskCompact{z-index:0}
+.taskCompact:has(.taskMenu[open]){z-index:100}
+.taskCompact.isFinishing,.taskCompact.isLeaving{z-index:1}
+.taskCompact.isLeaving{will-change:opacity,transform}
+/* Reserve the desktop scrollbar gutter so changing tabs doesn't shift the app. */
+html{scrollbar-gutter:stable}
+@media(min-width:700px){body{overflow-y:scroll}}
+/* Installed-app-only zoom suppression; preserve normal touch scrolling. */
+html.quiet-day-standalone,html.quiet-day-standalone body{
+ touch-action:pan-y;
+ overscroll-behavior-x:none;
 }
