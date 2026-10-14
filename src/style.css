@@ -106,3 +106,35 @@ footer{border-color:var(--qd-line)}
 .progressBar{margin:20px auto;display:flex;align-items:center;flex-direction:column;gap:8px}
 .progressBar .secondary{font-size:12px;padding:8px 12px}
 @media(max-width:600px){.taskBlock .startTask{padding:5px}.taskBlock .task{gap:5px}}
+
+
+/* Task list refinement: compact, calm and actions on demand */
+.taskList{gap:8px}
+.taskCompact{overflow:visible;border-radius:15px;box-shadow:0 1px 4px rgba(35,45,65,.025);position:relative}
+.taskCompact .task{display:flex;align-items:center;gap:11px;padding:13px 13px;min-height:66px}
+.taskCompact .dragHandle{width:14px;display:flex;align-items:center;justify-content:center;flex-shrink:0;color:#abb1bb;opacity:0;cursor:grab}
+.taskCompact:hover .dragHandle,.taskCompact:focus-within .dragHandle{opacity:1}
+.taskCompact .check{margin:0;flex-shrink:0}
+.taskCompact .taskContent{padding:0;flex:1;min-width:0}
+.taskCompact .taskTitle{font-size:14px;line-height:1.35;font-weight:550;overflow-wrap:anywhere}
+.taskCompact .firstStep{margin-top:4px;line-height:1.35;font-size:12px;color:#9298a4}
+.taskCompact .priorityMark{vertical-align:middle;display:inline-block;font-size:10px;margin-left:8px;border-radius:7px;padding:2px 6px}
+.taskActions{display:flex;align-items:center;gap:4px;flex-shrink:0}
+.taskCompact .startTask{width:32px;height:32px;display:grid;place-items:center;border-radius:10px;padding:0;color:#798392}
+.taskCompact .startTask:hover,.taskMenu summary:hover{background:var(--qd-tint)}
+.taskMenu{position:relative}
+.taskMenu summary{list-style:none;cursor:pointer;width:32px;height:32px;display:grid;place-items:center;border-radius:10px;color:#858d99}
+.taskMenu summary::-webkit-details-marker{display:none}
+.taskMenu[open] summary{background:var(--qd-tint);color:var(--qd-ink)}
+.taskMenuPanel{position:absolute;right:0;top:calc(100% + 5px);z-index:30;width:172px;background:var(--qd-surface);border:1px solid var(--qd-line);border-radius:13px;box-shadow:0 10px 28px rgba(25,35,50,.13);padding:5px;display:flex;flex-direction:column}
+.taskMenuPanel button{border:0;background:transparent;color:var(--qd-ink);font-size:12px;text-align:left;padding:10px;border-radius:9px;display:flex;align-items:center;gap:9px;width:100%}
+.taskMenuPanel button:hover{background:var(--qd-tint)}
+.taskMenuPanel button.destructive{color:#b55d5d}
+.taskCompact .stepsSection{padding:0;margin-top:7px}
+.taskCompact .stepsButton{display:inline-flex;align-items:center;gap:5px;background:var(--qd-tint);color:var(--qd-muted);border:0;border-radius:9px;padding:5px 9px;font-size:11px;font-weight:550}
+.compactSubtasks{padding:2px 18px 15px 58px;margin-top:0;gap:11px}
+.compactSubtasks .subtask{font-size:13px;color:var(--qd-ink)}
+.compactSubtasks .addStep{font-size:11px}
+.taskCompact.taskDone{opacity:.7}
+[data-theme=dark] .taskMenuPanel{background:var(--qd-surface)}
+@media(max-width:600px){.taskCompact .task{padding:12px 10px;gap:8px}.taskCompact .dragHandle{display:none}.taskCompact .taskTitle{font-size:13.5px}.taskCompact .startTask,.taskMenu summary{width:31px;height:31px}.compactSubtasks{padding-left:40px}}
