@@ -112,8 +112,6 @@ footer{border-color:var(--qd-line)}
 .taskList{gap:8px}
 .taskCompact{overflow:visible;border-radius:15px;box-shadow:0 1px 4px rgba(35,45,65,.025);position:relative}
 .taskCompact .task{display:flex;align-items:center;gap:11px;padding:13px 13px;min-height:66px}
-.taskCompact .dragHandle{width:14px;display:flex;align-items:center;justify-content:center;flex-shrink:0;color:#abb1bb;opacity:0;cursor:grab}
-.taskCompact:hover .dragHandle,.taskCompact:focus-within .dragHandle{opacity:1}
 .taskCompact .check{margin:0;flex-shrink:0}
 .taskCompact .taskContent{padding:0;flex:1;min-width:0}
 .taskCompact .taskTitle{font-size:14px;line-height:1.35;font-weight:550;overflow-wrap:anywhere}
@@ -137,4 +135,4 @@ footer{border-color:var(--qd-line)}
 .compactSubtasks .addStep{font-size:11px}
 .taskCompact.taskDone{opacity:.7}
 [data-theme=dark] .taskMenuPanel{background:var(--qd-surface)}
-@media(max-width:600px){.taskCompact .task{padding:12px 10px;gap:8px}.taskCompact .dragHandle{display:none}.taskCompact .taskTitle{font-size:13.5px}.taskCompact .startTask,.taskMenu summary{width:31px;height:31px}.compactSubtasks{padding-left:40px}}
+@media(max-width:600px){.taskCompact .task{padding:12px 10px;gap:8px}.taskCompact .taskTitle{font-size:13.5px}.taskCompact .startTask,.taskMenu summary{width:31px;height:31px}.compactSubtasks{padding-left:40px}}
