@@ -90,3 +90,19 @@ footer{border-color:var(--qd-line)}
 [data-theme=dark] .taskMore button{color:#aab3c0}
 [data-theme=dark] .priorityMark{background:#343f50;color:#c3d4f0}
 @media(max-width:600px){.shell{padding:0 16px}header{height:73px}.date{display:none}.screen{padding-top:29px}h1{font-size:29px}.taskBlock .task{gap:8px;padding:13px 10px 8px 13px}.stepsSection{padding-left:43px}.taskMore{padding-right:9px}.carryItem{align-items:flex-start;flex-direction:column}}
+
+/* Final core interactions */
+.entryTop{display:flex;align-items:center;justify-content:space-between}
+.entryTop .iconBtn{padding:5px}
+.editTask{width:100%;font-size:14px;border:1px solid var(--qd-line);background:var(--qd-surface);color:var(--qd-ink);border-radius:9px;padding:7px}
+.taskBlock .task{gap:7px}.taskBlock .startTask{padding:7px}
+.focusInterval{display:flex;justify-content:center;margin:3px auto 20px;color:var(--qd-muted);font-size:12px}
+.focusInterval select{border:1px solid var(--qd-line);border-radius:9px;padding:7px;background:var(--qd-surface);color:var(--qd-ink)}
+.checkIn,.eveningPanel{border:1px solid var(--qd-line);background:var(--qd-surface);border-radius:17px;padding:18px;text-align:left;margin:22px auto;max-width:540px}
+.checkIn h2,.eveningPanel h2{margin:0 0 14px}
+.checkIn .buttonRow{gap:7px}
+.eveningPanel textarea{display:block;width:100%;border:1px solid var(--qd-line);border-radius:14px;padding:12px;background:var(--qd-surface);color:var(--qd-ink);margin:15px 0;resize:vertical}
+.eveningPanel p{font-size:13px;color:var(--qd-muted)}
+.progressBar{margin:20px auto;display:flex;align-items:center;flex-direction:column;gap:8px}
+.progressBar .secondary{font-size:12px;padding:8px 12px}
+@media(max-width:600px){.taskBlock .startTask{padding:5px}.taskBlock .task{gap:5px}}
