@@ -30,3 +30,36 @@ export async function push(s:Settings){
  const result=await request(s,'PATCH',{files:{[name]:{content:JSON.stringify(data)}}});
  localStorage.setItem(revisionKey(s),result.history?.[0]?.version||'');
 }
+
+type RecordWithId={id:string;updatedAt?:number;createdAt?:number;startedAt?:number;endedAt?:number;deletedAt?:number};
+type Snapshot={version:number;tasks:RecordWithId[];entries:RecordWithId[];focus:RecordWithId[]};
+const latest=(x:RecordWithId)=>x.updatedAt||x.deletedAt||x.endedAt||x.createdAt||x.startedAt||0;
+const combine=(a:RecordWithId[],b:RecordWithId[])=>{
+ const records=new Map<string,RecordWithId>();
+ for(const item of [...a,...b]){
+  const old=records.get(item.id);
+  if(!old||latest(item)>latest(old))records.set(item.id,item);
+ }
+ return [...records.values()];
+};
+function merge(local:Snapshot,cloud:Snapshot):Snapshot{
+ return {version:1,tasks:combine(local.tasks,cloud.tasks),entries:combine(local.entries,cloud.entries),focus:combine(local.focus,cloud.focus)};
+}
+export async function synchronize(s:Settings):Promise<'created'|'updated'|'unchanged'>{
+ const existing=await exportData();
+ for(let attempt=0;attempt<3;attempt++){
+  const r=await remote(s);
+  const combined=r.data?merge(existing as Snapshot,r.data as Snapshot):existing;
+  const serialized=JSON.stringify({version:1,tasks:combined.tasks,entries:combined.entries,focus:combined.focus});
+  const remoteSerialized=r.data?JSON.stringify({version:1,tasks:r.data.tasks,entries:r.data.entries,focus:r.data.focus}):'';
+  const localSerialized=JSON.stringify({version:1,tasks:existing.tasks,entries:existing.entries,focus:existing.focus});
+  if(localSerialized!==serialized)await importData({...combined,exportedAt:new Date().toISOString()});
+  if(remoteSerialized===serialized){localStorage.setItem(revisionKey(s),r.revision||'');return 'unchanged'}
+  const verify=await remote(s);
+  if(verify.revision!==r.revision)continue;
+  const pushed=await request(s,'PATCH',{files:{[name]:{content:JSON.stringify({...combined,exportedAt:new Date().toISOString()})}}});
+  localStorage.setItem(revisionKey(s),pushed.history?.[0]?.version||'');
+  return r.data?'updated':'created';
+ }
+ throw new Error('Gist changed during synchronization. Try again; local data is preserved.');
+}
