@@ -1,5 +1,5 @@
 import Dexie, { type Table } from 'dexie';
-export type Task = {id:string;title:string;done:boolean;createdAt:number;updatedAt:number;source?:string};
+export type Task = {id:string;title:string;done:boolean;createdAt:number;updatedAt:number;source?:string;firstStep?:string;minutes?:number;priority?:'high'|'normal'|'low';plannedFor?:string};
 export type Entry = {id:string;date:string;text:string;createdAt:number};
 export type Focus = {id:string;taskId:string;startedAt:number;endedAt?:number;outcome?:string};
 class QuietDB extends Dexie { tasks!:Table<Task,string>; entries!:Table<Entry,string>; focus!:Table<Focus,string>; constructor(){super('quiet-day');this.version(1).stores({tasks:'id,updatedAt,done',entries:'id,date,createdAt',focus:'id,taskId,startedAt'});} }
