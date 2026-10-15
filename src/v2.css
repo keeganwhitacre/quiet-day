@@ -1,0 +1,134 @@
+
+/* Quiet Day v2 — personal, soft-modern workspace. Only layout and presentation. */
+:root{
+ --qd-bg:#f6f7fb;--qd-surface:#ffffff;--qd-ink:#293345;--qd-muted:#8590a4;
+ --qd-line:#e6eaf1;--qd-tint:#eef2f9;--qd-accent:#5678b5;--qd-accent-wash:#eaf0fb;
+ --qd-shadow:0 9px 32px rgba(30,47,84,.065);
+ color:var(--qd-ink);background:var(--qd-bg);
+}
+[data-theme=dark]{
+ --qd-bg:#171e2c;--qd-surface:#222d3f;--qd-ink:#ecf2fd;--qd-muted:#a1afc4;
+ --qd-line:#35445e;--qd-tint:#303e54;--qd-accent:#afcaff;--qd-accent-wash:#334969;
+ --qd-shadow:0 12px 34px rgba(2,8,23,.24);
+ color:var(--qd-ink);background:var(--qd-bg);
+}
+html,body{min-height:100%;background:var(--qd-bg);color:var(--qd-ink)}
+.shell{max-width:820px;padding:0 28px}
+header{height:86px}
+.wordmark{font-size:16px;letter-spacing:-.45px;font-weight:660;color:var(--qd-ink)}
+.headerRight{gap:10px}.date{color:var(--qd-muted)}
+header .iconBtn{border:0!important;border-radius:50%!important;background:transparent!important;color:var(--qd-muted)!important;width:38px;height:38px;display:grid;place-items:center}
+header .iconBtn:hover{background:var(--qd-tint)!important;color:var(--qd-ink)!important}
+.workspaceNav{display:flex;align-items:center;gap:9px;max-width:680px;margin:2px auto 0}
+.workspaceNav nav{flex:1;min-width:0;border:1px solid var(--qd-line)!important;border-radius:999px!important;background:var(--qd-tint)!important;padding:5px;gap:3px;margin:0;box-shadow:none}
+.workspaceNav nav button{border-radius:999px!important;padding:12px 8px;letter-spacing:.01em;color:var(--qd-muted);background:transparent}
+.workspaceNav nav button.active{background:var(--qd-surface)!important;color:var(--qd-ink)!important;box-shadow:0 2px 8px rgba(28,45,78,.08)!important}
+.navArrow{width:37px;height:37px;flex:none;display:grid;place-items:center;border:1px solid var(--qd-line);border-radius:50%;color:var(--qd-muted);background:var(--qd-surface)}
+.navArrow:hover:not(:disabled){color:var(--qd-accent);background:var(--qd-accent-wash)}
+.navArrow:disabled{opacity:.18}
+main{min-width:0;overflow:visible}
+.screen{padding:36px 12px 28px;min-width:0}
+.screenSlide.right{animation:qd-enter-right .24s cubic-bezier(.22,.7,.26,1) both}
+.screenSlide.left{animation:qd-enter-left .24s cubic-bezier(.22,.7,.26,1) both}
+@keyframes qd-enter-right{from{opacity:.4;transform:translateX(18px)}to{opacity:1;transform:translateX(0)}}
+@keyframes qd-enter-left{from{opacity:.4;transform:translateX(-18px)}to{opacity:1;transform:translateX(0)}}
+.screen h1{font-size:34px;font-weight:660;letter-spacing:-1.35px;color:var(--qd-ink)}
+.eyebrow{color:var(--qd-muted)}
+.intro,.muted,.small{color:var(--qd-muted)}
+.todayHeading{margin-bottom:20px;align-items:center}
+.todayHeading .intro{margin:7px 0 0;font-size:12px}
+.roundUtility,.utilityBar button,.carryItem button,.addStep,.primary,.secondary,.stepsButton,.finish button,.syncActions button,.focusActions button{
+ border-radius:999px!important;
+}
+.roundUtility,.utilityBar button,.carryItem button,.addStep{background:transparent;border:1px solid var(--qd-line);color:var(--qd-muted)}
+.roundUtility:hover,.utilityBar button:hover,.carryItem button:hover{background:var(--qd-tint);color:var(--qd-ink)}
+.primary{background:#4e70ad;color:white;border:1px solid transparent}
+.primary:hover{background:#3f629d}
+[data-theme=dark] .primary{background:#5476b5!important;color:#fff!important}
+.secondary{background:transparent;border:1px solid var(--qd-line);color:var(--qd-ink)}
+/* Light, open capture line — no rounded message box. */
+.addRow{border:0!important;border-bottom:1px solid var(--qd-line)!important;border-radius:0!important;box-shadow:none!important;background:transparent!important;overflow:visible;margin:8px 0 25px;min-height:51px}
+.addRow:focus-within{border-bottom-color:var(--qd-accent)!important;box-shadow:none!important}
+.addRow input{padding:12px 3px;font-size:15px;color:var(--qd-ink)}
+.addRow input::placeholder{color:var(--qd-muted)}
+.addRow button{background:var(--qd-accent-wash);color:var(--qd-accent);width:36px;height:36px;align-self:center;border-radius:50%;display:grid;place-items:center;padding:0;margin:0 3px 0 6px}
+.taskList{gap:0;background:var(--qd-surface);border:1px solid var(--qd-line);border-radius:21px;padding:4px 17px;box-shadow:var(--qd-shadow);isolation:isolate}
+.taskCompact{background:transparent!important;border:0!important;border-radius:0!important;box-shadow:none!important;transform-origin:center top;position:relative}
+.taskCompact:not(:last-child){border-bottom:1px solid var(--qd-line)!important}
+.taskCompact .task{padding:15px 0;gap:13px;min-height:62px}
+.taskCompact .taskContent{padding:0}
+.taskCompact .taskTitle{font-size:14px;font-weight:570;line-height:1.5;color:var(--qd-ink)}
+.taskCompact .check{border-color:#adbacb}
+.taskCompact .check.completed{background:#6987bb;border-color:#6987bb}
+.taskCompact .priorityMark{background:var(--qd-accent-wash);color:var(--qd-accent);font-size:10px}
+.taskCompact .startTask,.taskMenu summary{color:var(--qd-muted);border-radius:50%!important}
+.taskCompact .startTask:hover,.taskMenu summary:hover,.taskMenu[open] summary{background:var(--qd-accent-wash);color:var(--qd-accent)}
+.taskMenuPanel{background:var(--qd-surface);border:1px solid var(--qd-line);box-shadow:0 12px 32px rgba(25,40,75,.16);border-radius:16px}
+.taskMenuPanel button{color:var(--qd-ink)}
+.taskCompact:has(.taskMenu[open]){z-index:100}
+.taskCompact .stepsSection{margin-top:6px;padding:0}
+.taskCompact .stepsButton{background:transparent!important;color:var(--qd-accent)!important;border:0!important;padding:3px 1px!important;font-size:11px}
+.compactSubtasks{padding:0 10px 16px 34px;display:flex;flex-direction:column;gap:10px}
+.compactSubtasks .taskDetailFirst{margin:0;font-size:12.5px;line-height:1.6;color:var(--qd-muted)}
+.compactSubtasks .subtask{font-size:13px;color:var(--qd-ink)}
+.compactSubtasks input{accent-color:var(--qd-accent)}
+/* Journal is an open document, not a form card. */
+.journalScreen .journal{display:block;width:100%;min-height:355px;background:transparent!important;border:0!important;border-radius:0!important;padding:24px 2px 12px;font-size:18px;line-height:1.86;color:var(--qd-ink);resize:vertical;box-shadow:none!important;caret-color:var(--qd-accent)}
+.journalScreen .journal:focus{border:0!important;outline:none;box-shadow:none!important}
+.journalScreen .journal::placeholder{color:var(--qd-muted);opacity:.8}
+.journalScreen .actions{border-top:1px solid var(--qd-line);padding-top:16px;margin-top:12px;justify-content:flex-end}
+.journalScreen .history{border-top:1px solid var(--qd-line);margin-top:42px}
+.journalScreen .history article{border-color:var(--qd-line)}
+.journalScreen .history article p{color:var(--qd-ink)}
+/* Focus: time gets prominence, the conversation is open and readable. */
+.focus{text-align:left}
+.focus h1{text-align:left;max-width:630px;margin:0}
+.focus .intro{text-align:left;margin:10px 0 20px}
+.focus .timer{text-align:center;font-size:75px;font-weight:550;letter-spacing:-3px;color:var(--qd-accent);margin:30px auto 14px}
+.focusInterval,.focusActions{justify-content:center}
+.focusInterval select,.stuck select{background:var(--qd-surface);color:var(--qd-accent);border-color:var(--qd-line)}
+.focusChat{max-width:660px;margin:35px auto 0;padding:12px 0 0;border-top:1px solid var(--qd-line)}
+.focusChat p{font-size:13px;line-height:1.65;padding:11px 15px;border-radius:14px}
+.focusAssistant{border:0!important;background:var(--qd-accent-wash)!important;color:var(--qd-ink);margin-right:13%!important}
+.focusUser{background:var(--qd-tint)!important;color:var(--qd-ink);margin-left:15%!important}
+.focusForm{background:transparent;border:0;border-bottom:1px solid var(--qd-line);border-radius:0;margin-top:24px;padding:5px 0;align-items:center}
+.focusForm:focus-within{border-bottom-color:var(--qd-accent)}
+.focusForm input{border:0!important;box-shadow:none!important;border-radius:0!important;padding:12px 3px;background:transparent!important;color:var(--qd-ink);font-size:15px}
+.focusForm input:focus{outline:none}
+.focusForm button{border:0;background:var(--qd-accent-wash);color:var(--qd-accent);border-radius:50%!important;width:38px;height:38px;display:grid;place-items:center;padding:0}
+.focus .progressBar{margin:25px auto}
+.focus .finish button{border:1px solid var(--qd-line);padding:10px 15px;font-size:12px;color:var(--qd-muted);background:transparent}
+.focus .finish button:hover{color:var(--qd-ink);background:var(--qd-tint)}
+.focus .stuck,.focus .checkIn{background:var(--qd-surface);border:1px solid var(--qd-line);border-radius:20px}
+.carryPanel{background:var(--qd-accent-wash);border-color:var(--qd-line);border-radius:19px}
+.carryToggle{color:var(--qd-accent)}
+.carryBody p{color:var(--qd-muted)}
+.taskCompact.isFinishing .check.completed{background:#6987bb;border-color:#6987bb}
+.eveningPanel,.settingsFields input,.settingsFields select{background:var(--qd-surface);color:var(--qd-ink);border-color:var(--qd-line)}
+footer{margin-top:55px;border-color:var(--qd-line)}
+footer button,footer .import{color:var(--qd-muted)}
+[data-theme=dark] .journal,[data-theme=dark] .addRow,[data-theme=dark] .focusForm input{background:transparent!important}
+[data-theme=dark] nav button.active{background:var(--qd-surface)!important;color:var(--qd-ink)!important}
+[data-theme=dark] .taskList{background:var(--qd-surface);border-color:var(--qd-line)}
+[data-theme=dark] .taskCompact:not(:last-child){border-color:var(--qd-line)!important}
+[data-theme=dark] .taskCompact .taskTitle,[data-theme=dark] .taskDetailFirst{color:var(--qd-ink)}
+[data-theme=dark] .taskCompact .taskDetailFirst{opacity:.7}
+[data-theme=dark] .taskMenuPanel{background:var(--qd-surface)}
+@media(max-width:600px){
+ .shell{padding:0 16px}
+ header{height:71px}
+ .workspaceNav{gap:5px}
+ .navArrow{width:31px;height:31px}
+ .workspaceNav nav button{padding:11px 6px;font-size:12px}
+ .screen{padding:30px 1px 20px}
+ .screen h1{font-size:30px}
+ .taskList{padding:3px 12px;border-radius:18px}
+ .taskCompact .task{padding:13px 0;gap:10px}
+ .compactSubtasks{padding-left:30px}
+ .journalScreen .journal{min-height:320px;font-size:17px}
+ .focus .timer{font-size:62px}
+}
+@media(prefers-reduced-motion:reduce){
+ .screenSlide.left,.screenSlide.right{animation:none!important}
+ .navArrow,.workspaceNav nav button{transition:none!important}
+}
