@@ -24,10 +24,10 @@ export async function focusReply(key:string,task:string,firstStep:string,subtask
 export type ReorganizationStep={title:string;minutes:number};
 export type ReorganizationItem={id:string;steps:ReorganizationStep[]};
 export type ReorganizationProposal={order:string[];items:ReorganizationItem[]};
-export async function proposeReorganization(key:string,tasks:{id:string;title:string;priority?:string;firstStep?:string;minutes?:number;subtasks?:{title:string;done:boolean}[];sortOrder?:number}[],scope?:string):Promise<ReorganizationProposal>{
+export async function proposeReorganization(key:string,tasks:{id:string;title:string;priority?:string;firstStep?:string;minutes?:number;subtasks?:{title:string;done:boolean;minutes?:number}[];sortOrder?:number}[],scope?:string):Promise<ReorganizationProposal>{
  const input=scope?tasks.filter(t=>t.id===scope):tasks;
  if(!input.length)throw new Error('No tasks to reorganize.');
- const prompt='You help one person convert intimidating tasks into doable actions. Return JSON ONLY of shape {"order":["exact task id"],"items":[{"id":"exact task id","steps":[{"title":"small observable action","minutes":5}]}]}. order MUST contain every provided task id once, in a helpful execution order based on real dependencies, stated priorities, and effort. For a single task keep the supplied order. items ONLY for genuinely vague, broad or difficult tasks that benefit from decomposition; leave actionable errands and emails unchanged. Break complex tasks into 2-5 meaningful steps; no filler such as decide to start, make a list, prepare mentally, or work on it. A first step may be opening the relevant document, but it must lead to actual progress. Each step is an approachable session, not a promise to complete the whole project. No invented dates, obligations, or details. If a task already has subtasks, do NOT propose new steps for it: preserve existing progress. Do not split everything. Duration estimates are optional user-facing guidance and are NOT deadlines. No therapy language. JSON only.';
+ const prompt='You help one person convert intimidating tasks into doable actions. Return JSON ONLY of shape {"order":["exact task id"],"items":[{"id":"exact task id","steps":[{"title":"small observable action","minutes":5}]}]}. order MUST contain every provided task id once, in a helpful execution order based on real dependencies, stated priorities, and effort. For a single task keep the supplied order. items ONLY for genuinely vague, broad or difficult tasks that benefit from decomposition; leave actionable errands and emails unchanged. Break complex tasks into 2-5 meaningful steps; no filler such as decide to start, make a list, prepare mentally, or work on it. A first step may be opening the relevant document, but it must lead to actual progress. Each step is an approachable session, not a promise to complete the whole project. No invented dates, obligations, or details. If a task already has subtasks, do NOT rewrite its subtasks; existing incomplete subtasks will automatically be offered as flat tasks, preserving completed progress. Do not split everything. Duration estimates are optional user-facing guidance and are NOT deadlines. No therapy language. JSON only.';
  const raw=await generate(key,prompt,{tasks:input});
  let x:any;try{x=JSON.parse(raw.replace(/^\x60\x60\x60(?:json)?\s*|\s*\x60\x60\x60$/g,''))}catch{throw new Error('AI returned an invalid plan. Try again.')}
  const ids=new Set(input.map(t=>t.id));
@@ -43,5 +43,15 @@ export async function proposeReorganization(key:string,tasks:{id:string;title:st
   const steps:ReorganizationStep[]=v.steps.slice(0,5).filter((st:any)=>st&&typeof st.title==='string'&&st.title.trim()).map((st:any)=>({title:st.title.trim().slice(0,160),minutes:Math.min(90,Math.max(2,Math.round(Number(st.minutes)||10)))}));
   return steps.length>=2?[{id:v.id,steps}]:[];
  });
+ // Existing unfinished subtasks are the most reliable proposed steps.
+ // Never ask the model to overwrite progress that has already been recorded.
+ for(const task of input){
+  if(!task.subtasks?.length)continue;
+  const unfinished=task.subtasks.filter(st=>!st.done&&st.title.trim()).map(st=>({
+   title:st.title.trim().slice(0,160),
+   minutes:Math.min(90,Math.max(2,Math.round(Number(st.minutes)||Number(task.minutes)||10)))
+  }));
+  if(unfinished.length)items.push({id:task.id,steps:unfinished});
+ }
  return {order,items};
 }
