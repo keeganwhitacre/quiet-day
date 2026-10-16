@@ -67,7 +67,7 @@ function App(){const[page,setPage]=useState<Page>('today'),[tasks,setTasks]=useS
      before.push({...current});
     }
     const created:Task[]=[];
-    let position=1;
+    let position=proposalScope?(before.find(t=>t.id===proposalScope)?.sortOrder??before.find(t=>t.id===proposalScope)?.createdAt??1):1;
     for(const id of proposalOrder){
      const original=before.find(t=>t.id===id);
      if(!original)throw new Error('Invalid task order.');
@@ -78,7 +78,7 @@ function App(){const[page,setPage]=useState<Page>('today'),[tasks,setTasks]=useS
       for(const step of idea.steps){
        const childId=uid();createdIds.push(childId);
        created.push({id:childId,title:step.title,done:false,createdAt:appliedAt,updatedAt:appliedAt,
-        plannedFor:original.plannedFor||localDate(),sortOrder:position++,source:'reorganized',
+        plannedFor:original.plannedFor||localDate(),sortOrder:proposalScope?position+created.length/1000:position++,source:'reorganized',
         planSourceId:original.id,planBatchId:batchId,minutes:step.minutes,priority:original.priority});
       }
      }else if(!proposalScope){
