@@ -273,3 +273,13 @@ body{min-height:100dvh;background:var(--qd-bg)}
  html.quiet-day-standalone .stickyChrome{position:relative;top:auto;flex:0 0 auto}
  html.quiet-day-standalone main{flex:1 1 auto;min-height:0;overflow-y:auto;overflow-x:hidden;overscroll-behavior:none;-webkit-overflow-scrolling:touch;padding-bottom:env(safe-area-inset-bottom,0px)}
 }
+
+
+/* Show the actionable tasks in the preview, rather than a nested plan card. */
+.proposalReplace{display:inline-flex;align-items:center;gap:8px;padding:9px 0 5px;font-size:12px;color:var(--qd-accent);cursor:pointer}
+.proposalFlatSteps{padding:3px 0 7px 10px;display:flex;flex-direction:column;gap:0}
+.proposalFlatRow{display:flex;align-items:center;gap:12px;padding:11px 0;border-bottom:1px solid var(--qd-line);font-size:13px;color:var(--qd-ink)}
+.proposalFlatRow:last-child{border-bottom:0}
+.proposalFlatRow>span:nth-child(2){flex:1;line-height:1.45}
+.proposalFlatCircle{height:16px;width:16px;flex:none;border:1.5px solid var(--qd-muted);border-radius:50%}
+.proposalFlatRow small{color:var(--qd-muted);font-size:11px}
