@@ -1,7 +1,7 @@
-import React,{useEffect,useState,useRef} from 'react';import{createRoot}from'react-dom/client';import{BookOpen,Check,ChevronRight,Download,Upload,Plus,ArrowLeft,Play,RotateCcw,Pause,Sun,Moon,Settings as SettingsIcon,Trash2,ChevronDown,ChevronUp,RefreshCcw,Send,CalendarClock,ArrowUp,ArrowDown,Pencil,Clock3,MoreHorizontal}from'lucide-react';import{db,uid,localDate,exportData,importData,type Task,type Entry}from'./db';import {makePlan,focusReply,type Plan,MODEL} from './ai';import {loadSettings,saveSettings,pull,push,synchronize,type Settings} from './gist';import './style.css';import './v2.css';
+import React,{useEffect,useState,useRef} from 'react';import{createRoot}from'react-dom/client';import{BookOpen,Check,ChevronRight,Download,Upload,Plus,ArrowLeft,Play,RotateCcw,Pause,Sun,Moon,Settings as SettingsIcon,Trash2,ChevronDown,ChevronUp,RefreshCcw,Send,CalendarClock,ArrowUp,ArrowDown,Pencil,Clock3,MoreHorizontal}from'lucide-react';import{db,uid,localDate,exportData,importData,type Task,type Entry}from'./db';import {makePlan,focusReply,proposeReorganization,type ReorganizationProposal,type Plan,MODEL} from './ai';import {loadSettings,saveSettings,pull,push,synchronize,type Settings} from './gist';import './style.css';import './v2.css';
 type Page='journal'|'today'|'focus'|'settings';
 const dateLabel=()=>new Intl.DateTimeFormat(undefined,{weekday:'long',month:'long',day:'numeric'}).format(new Date());
-function App(){const[page,setPage]=useState<Page>('today'),[tasks,setTasks]=useState<Task[]>([]),[entries,setEntries]=useState<Entry[]>([]),[draft,setDraft]=useState(''),[newTask,setNewTask]=useState(''),[selected,setSelected]=useState<string|null>(null),[active,setActive]=useState(false),[seconds,setSeconds]=useState(0),[stuck,setStuck]=useState(false),[dark,setDark]=useState(()=>{try{return localStorage.getItem('quiet-day-theme')==='dark'}catch{return false}}),[error,setError]=useState(''),[busy,setBusy]=useState(false),[config,setConfig]=useState<Settings>(loadSettings),[plan,setPlan]=useState<Plan|null>(null),[help,setHelp]=useState(''),[barrier,setBarrier]=useState('I cannot get started'),[message,setMessage]=useState(''),[expanded,setExpanded]=useState<string[]>([]),[conversation,setConversation]=useState<{role:'user'|'assistant';text:string}[]>([]),[focusInput,setFocusInput]=useState(''),[showDone,setShowDone]=useState(false),[showLater,setShowLater]=useState(false),[reviewOpen,setReviewOpen]=useState(false),[historyOpen,setHistoryOpen]=useState(false),[editing,setEditing]=useState<string|null>(null),[editText,setEditText]=useState(''),[evening,setEvening]=useState(false),[eveningNote,setEveningNote]=useState(''),[checkIn,setCheckIn]=useState(false),[finishingIds,setFinishingIds]=useState<string[]>([]),[leavingIds,setLeavingIds]=useState<string[]>([]),[navDirection,setNavDirection]=useState<'left'|'right'>('right'),[syncState,setSyncState]=useState(''),[syncEnabled,setSyncEnabled]=useState(localStorage.getItem('quiet-day-auto-sync')!=='off');const syncing=useRef(false);const swipeOrigin=useRef<{x:number;y:number;eligible:boolean}|null>(null);
+function App(){const[page,setPage]=useState<Page>('today'),[tasks,setTasks]=useState<Task[]>([]),[entries,setEntries]=useState<Entry[]>([]),[draft,setDraft]=useState(''),[newTask,setNewTask]=useState(''),[selected,setSelected]=useState<string|null>(null),[active,setActive]=useState(false),[seconds,setSeconds]=useState(0),[stuck,setStuck]=useState(false),[dark,setDark]=useState(()=>{try{return localStorage.getItem('quiet-day-theme')==='dark'}catch{return false}}),[error,setError]=useState(''),[busy,setBusy]=useState(false),[config,setConfig]=useState<Settings>(loadSettings),[plan,setPlan]=useState<Plan|null>(null),[help,setHelp]=useState(''),[barrier,setBarrier]=useState('I cannot get started'),[message,setMessage]=useState(''),[expanded,setExpanded]=useState<string[]>([]),[conversation,setConversation]=useState<{role:'user'|'assistant';text:string}[]>([]),[focusInput,setFocusInput]=useState(''),[showDone,setShowDone]=useState(false),[showLater,setShowLater]=useState(false),[reviewOpen,setReviewOpen]=useState(false),[historyOpen,setHistoryOpen]=useState(false),[editing,setEditing]=useState<string|null>(null),[editText,setEditText]=useState(''),[evening,setEvening]=useState(false),[eveningNote,setEveningNote]=useState(''),[checkIn,setCheckIn]=useState(false),[finishingIds,setFinishingIds]=useState<string[]>([]),[leavingIds,setLeavingIds]=useState<string[]>([]),[navDirection,setNavDirection]=useState<'left'|'right'>('right'),[reorganizing,setReorganizing]=useState(false),[proposal,setProposal]=useState<ReorganizationProposal|null>(null),[proposalScope,setProposalScope]=useState<string|null>(null),[proposalChosen,setProposalChosen]=useState<string[]>([]),[proposalOrder,setProposalOrder]=useState<string[]>([]),[showEstimates,setShowEstimates]=useState(false),[planUndo,setPlanUndo]=useState<{id:string;before:Task;appliedAt:number}[]|null>(null),[syncState,setSyncState]=useState(''),[syncEnabled,setSyncEnabled]=useState(localStorage.getItem('quiet-day-auto-sync')!=='off');const syncing=useRef(false);const swipeOrigin=useRef<{x:number;y:number;eligible:boolean}|null>(null);
  const reload=async()=>{setTasks((await db.tasks.toArray()).filter(t=>!t.deletedAt).sort((a,b)=>Number(a.done)-Number(b.done)||(a.sortOrder??a.createdAt)-(b.sortOrder??b.createdAt)));setEntries((await db.entries.toArray()).filter(e=>!e.deletedAt).sort((a,b)=>b.createdAt-a.createdAt));};
  useEffect(()=>{reload().catch(e=>setError(String(e)));setDraft(localStorage.getItem('quiet-day-draft')||'');},[]);useEffect(()=>{localStorage.setItem('quiet-day-draft',draft)},[draft]);
  useEffect(()=>{document.documentElement.dataset.theme=dark?'dark':'light';try{localStorage.setItem('quiet-day-theme',dark?'dark':'light')}catch{}},[dark]);
@@ -37,6 +37,73 @@ function App(){const[page,setPage]=useState<Page>('today'),[tasks,setTasks]=useS
  const saveProgress=async()=>{if(!current)return;const note=prompt('Where did you leave off?',current.progressNote||'');if(note===null)return;await db.tasks.update(current.id,{progressNote:note.trim(),firstStep:note.trim()||current.firstStep,updatedAt:Date.now()});await reload();};
  const saveEvening=async()=>{if(!eveningNote.trim())return;await db.entries.add({id:uid(),date:localDate(),createdAt:Date.now(),text:'Evening note: '+eveningNote.trim()});setEveningNote('');setEvening(false);await reload();};
  const sync=async(direction:'pull'|'push')=>{setBusy(true);setError('');setMessage('');try{if(direction==='pull'){if(!confirm('Pull replaces local data. Export a backup first if you have unsynced work. Continue?'))return;await pull(config);await reload();setMessage('Data pulled from Gist.')}else{await push(config);setMessage('Data saved to Gist.')}}catch(e){setError(String(e))}finally{setBusy(false)}};
+
+ const openReorganization=async(scope?:string)=>{
+  setReorganizing(true);setError('');
+  try{
+   const available=tasks.filter(t=>!t.done&&!t.deletedAt&&(!t.deferredUntil||t.deferredUntil<=localDate()));
+   const list=scope?available.filter(t=>t.id===scope):available;
+   if(!list.length)throw new Error('No open tasks to reorganize.');
+   const result=await proposeReorganization(config.geminiKey,list.map(t=>({id:t.id,title:t.title,priority:t.priority,firstStep:t.firstStep,minutes:t.minutes,sortOrder:t.sortOrder,subtasks:t.subtasks})),scope);
+   setProposal(result);setProposalScope(scope||null);setProposalOrder(result.order);
+   setProposalChosen(result.items.map(x=>x.id));
+  }catch(e){setError(String(e))}finally{setReorganizing(false)}
+ };
+ const shiftProposal=(id:string,delta:number)=>{
+  setProposalOrder(order=>{const list=[...order],i=list.indexOf(id),j=i+delta;if(i<0||j<0||j>=list.length)return order;[list[i],list[j]]=[list[j],list[i]];return list});
+ };
+ const applyReorganization=async()=>{
+  if(!proposal)return;
+  const source=tasks.filter(t=>proposal.order.includes(t.id));
+  try{
+   const before:Task[]=[];
+   const stamp=Date.now();
+   await db.transaction('rw',db.tasks,async()=>{
+    for(const id of proposal.order){
+     const current=await db.tasks.get(id),snapshot=source.find(t=>t.id===id);
+     if(!current||!snapshot||current.updatedAt!==snapshot.updatedAt||current.done||current.deletedAt)throw new Error('Tasks changed while reviewing. Generate the plan again.');
+     before.push({...current});
+    }
+    for(let index=0;index<proposalOrder.length;index++){
+     const id=proposalOrder[index];
+     const current=before.find(t=>t.id===id)!;
+     const expanded=proposal.items.find(x=>x.id===id&&proposalChosen.includes(id));
+     const modifications:Partial<Task>={};
+     if(!proposalScope)modifications.sortOrder=index+1;
+     if(expanded&&!current.planExpanded&&!current.subtasks?.length){
+      modifications.planExpanded=true;
+      modifications.planOriginal={subtasks:current.subtasks,firstStep:current.firstStep,minutes:current.minutes,sortOrder:current.sortOrder};
+      modifications.subtasks=expanded.steps.map(step=>({id:uid(),title:step.title,minutes:step.minutes,done:false}));
+      modifications.firstStep=expanded.steps[0].title;
+     }
+     if(Object.keys(modifications).length)await db.tasks.update(id,{...modifications,updatedAt:stamp});
+    }
+   });
+   const changed=before.filter(t=>!proposalScope||proposalChosen.includes(t.id)&&proposal.items.some(x=>x.id===t.id)&&!t.subtasks?.length&&!t.planExpanded);
+   setPlanUndo(changed.map(t=>({id:t.id,before:t,appliedAt:stamp})));
+   setProposal(null);setProposalScope(null);await reload();
+  }catch(e){setError(String(e))}
+ };
+ const undoReorganization=async()=>{
+  if(!planUndo?.length)return;
+  try{
+   await db.transaction('rw',db.tasks,async()=>{
+    for(const row of planUndo){
+     const current=await db.tasks.get(row.id);
+     if(!current||current.updatedAt!==row.appliedAt)throw new Error('Some tasks changed since this plan was applied. Use individual Collapse to preserve newer work.');
+    }
+    for(const row of planUndo)await db.tasks.put({...row.before,updatedAt:Date.now()});
+   });
+   setPlanUndo(null);await reload();
+  }catch(e){setError(String(e))}
+ };
+ const collapsePlan=async(t:Task)=>{
+  if(!t.planExpanded||!t.planOriginal)return;
+  const original=t.planOriginal;
+  if(t.subtasks?.some(x=>x.done)&&!confirm('Restore the original task? Checked plan steps will be removed.'))return;
+  await db.tasks.update(t.id,{subtasks:original.subtasks||[],firstStep:original.firstStep,minutes:original.minutes,planExpanded:false,planOriginal:undefined,updatedAt:Date.now()});
+  setPlanUndo(null);await reload();
+ };
  const visibleTasks=tasks.filter(t=>!t.done&&(!t.deferredUntil||t.deferredUntil<=localDate()));
  const deferredTasks=tasks.filter(t=>!t.done&&!!t.deferredUntil&&t.deferredUntil>localDate());
  const carriedTasks=visibleTasks.filter(t=>t.createdAt<new Date(localDate()+'T00:00:00').getTime()&&(!t.lastReviewedAt||t.lastReviewedAt<new Date(localDate()+'T00:00:00').getTime()));
@@ -46,10 +113,15 @@ function App(){const[page,setPage]=useState<Page>('today'),[tasks,setTasks]=useS
  const swipeStart=(e:React.TouchEvent<HTMLElement>)=>{if(e.touches.length!==1)return;const target=e.target as HTMLElement;swipeOrigin.current={x:e.touches[0].clientX,y:e.touches[0].clientY,eligible:!target.closest('button,input,textarea,select,summary,details,label,.taskMenuPanel,.subtasks')};};
  const swipeEnd=(e:React.TouchEvent<HTMLElement>)=>{const start=swipeOrigin.current;swipeOrigin.current=null;if(!start?.eligible||e.changedTouches.length!==1||page==='settings')return;const dx=e.changedTouches[0].clientX-start.x,dy=e.changedTouches[0].clientY-start.y;if(Math.abs(dx)>76&&Math.abs(dx)>Math.abs(dy)*1.7){const next=order.indexOf(page)+(dx<0?1:-1);if(next>=0&&next<order.length)navigate(order[next])}};
 
- return <div className="shell"><header><button className="wordmark" onClick={()=>navigate('today')}>dashboard</button><div className="headerRight"><span className="date">{dateLabel()}</span><button className="iconBtn" aria-label="Toggle color mode" onClick={()=>setDark(!dark)}>{dark?<Sun size={17}/>:<Moon size={17}/>}</button><button className="iconBtn" aria-label="Settings" onClick={()=>setPage('settings')}><SettingsIcon size={18}/></button></div></header><main onTouchStart={swipeStart} onTouchEnd={swipeEnd}><div className="workspaceNav"><button className="navArrow" disabled={page==='journal'||page==='settings'} aria-label="Previous space" onClick={()=>navigate(order[Math.max(0,order.indexOf(page)-1)])}><ArrowLeft size={17}/></button><nav aria-label="Main navigation"><button className={page==='journal'?'active':''} onClick={()=>navigate('journal')}>Journal</button><button className={page==='today'?'active':''} onClick={()=>navigate('today')}>Today</button><button className={page==='focus'?'active':''} onClick={()=>navigate('focus')}>Focus</button></nav><button className="navArrow" disabled={page==='focus'||page==='settings'} aria-label="Next space" onClick={()=>navigate(order[Math.min(2,order.indexOf(page)+1)])}><ChevronRight size={17}/></button></div>
+ return <div className="shell"><div className="stickyChrome"><header><button className="wordmark" onClick={()=>navigate('today')}>dashboard</button><div className="headerRight"><span className="date">{dateLabel()}</span><button className="iconBtn" aria-label="Toggle color mode" onClick={()=>setDark(!dark)}>{dark?<Sun size={17}/>:<Moon size={17}/>}</button><button className="iconBtn" aria-label="Settings" onClick={()=>setPage('settings')}><SettingsIcon size={18}/></button></div></header><div className="workspaceNav"><button className="navArrow" disabled={page==='journal'||page==='settings'} aria-label="Previous space" onClick={()=>navigate(order[Math.max(0,order.indexOf(page)-1)])}><ArrowLeft size={17}/></button><nav aria-label="Main navigation"><button className={page==='journal'?'active':''} onClick={()=>navigate('journal')}>Journal</button><button className={page==='today'?'active':''} onClick={()=>navigate('today')}>Today</button><button className={page==='focus'?'active':''} onClick={()=>navigate('focus')}>Focus</button></nav><button className="navArrow" disabled={page==='focus'||page==='settings'} aria-label="Next space" onClick={()=>navigate(order[Math.min(2,order.indexOf(page)+1)])}><ChevronRight size={17}/></button></div></div><main onTouchStart={swipeStart} onTouchEnd={swipeEnd}>
  {error&&<p role="alert" className="error">{error}</p>}
  {page==='journal'&&<section className={'screen journalScreen screenSlide '+navDirection} key="journal"><h1>Journal</h1><textarea aria-label="Morning journal" className="journal" placeholder="Write…" value={draft} onChange={e=>setDraft(e.target.value)}/><div className="actions"><span className="hint"></span><div className="buttonRow"><button className="secondary" onClick={saveEntry} disabled={!draft.trim()}>Save entry</button><button className="primary" onClick={planDay} disabled={!draft.trim()||busy}>{busy?'Organizing…':'Add tasks to Today'} <ChevronRight size={16}/></button></div></div>{entries.length>0&&<div className="history timelineHistory"><button className="historyToggle" aria-expanded={historyOpen} onClick={()=>setHistoryOpen(o=>!o)}><span>Past entries <span className="historyCount">{entries.length}</span></span>{historyOpen?<ChevronUp size={16}/>:<ChevronDown size={16}/>}</button>{historyOpen&&<div className="timelineEntries">{entries.map(e=><article className="timelineEntry" key={e.id}><div className="entryTop"><span className="small muted">{e.date}</span><button className="iconBtn" aria-label={'Delete journal entry from '+e.date} onClick={()=>removeEntry(e)}><Trash2 size={15}/></button></div><p>{e.text}</p></article>)}</div>}</div>}</section>}
  {page==='today'&&<section className={'screen todayScreen screenSlide '+navDirection} key="today"><div className="todayHeading"><div><h1>Today</h1><p className="muted intro">{visibleTasks.length} open{carriedTasks.length>0?' · '+carriedTasks.length+' carried over':''}</p></div><button className="roundUtility" onClick={()=>{setPage('journal');setDraft(d=>d)}}><Plus size={17}/> Journal</button></div><form className="addRow" onSubmit={async e=>{e.preventDefault();await addTask(newTask);setNewTask('')}}><input aria-label="New task" placeholder="New task…" value={newTask} onChange={e=>setNewTask(e.target.value)}/><button aria-label="Add task" type="submit" disabled={!newTask.trim()}><Plus size={18}/></button></form>{carriedTasks.length>0&&<div className="carryPanel"><button className="carryToggle" onClick={()=>setReviewOpen(!reviewOpen)}><span><CalendarClock size={17}/> {carriedTasks.length} unfinished from earlier</span>{reviewOpen?<ChevronUp size={17}/>:<ChevronDown size={17}/>}</button>{reviewOpen&&<div className="carryBody">{carriedTasks.slice(0,8).map(t=><div className="carryItem" key={t.id}><span>{t.title}</span><div><button onClick={()=>postpone(t,0)}>Keep today</button><button onClick={()=>beginTask(t.id)}>Start</button><button onClick={()=>postpone(t,1)}>Tomorrow</button><button onClick={()=>postpone(t,7)}>Later</button></div></div>)}</div>}</div>}
+ <div className="reorganizeControls"><button className="secondary organizeTrigger" disabled={reorganizing||!visibleTasks.length} onClick={()=>openReorganization()}><RefreshCcw size={15}/>{reorganizing?'Organizing…':'Expand & Reorganize'}</button>{planUndo?.length?<button className="undoPlan" onClick={undoReorganization}>Undo plan</button>:null}</div>
+ {proposal&&<div className="proposalPanel" role="region" aria-label="Review proposed task plan"><div className="proposalHeading"><div><h2>Suggested order</h2><p className="small muted">{proposal.items.length} possible expansions · Review before applying</p></div><button className="iconBtn" onClick={()=>setProposal(null)} aria-label="Close plan"><Check size={16}/></button></div>
+ <label className="proposalEstimate"><input type="checkbox" checked={showEstimates} onChange={e=>setShowEstimates(e.target.checked)}/> Show time estimates</label>
+ <div className="proposalRows">{proposalOrder.map((id,i)=>{const source=tasks.find(t=>t.id===id);const idea=proposal.items.find(x=>x.id===id);if(!source)return null;return <div className="proposalRow" key={id}><div className="proposalRowHeader"><span className="proposalNumber">{i+1}</span><div className="proposalRowText"><strong>{source.title}</strong>{idea&&<span className="proposalContext">Suggested steps</span>}</div>{!proposalScope&&<div className="proposalMove"><button disabled={i===0} aria-label={'Move '+source.title+' up'} onClick={()=>shiftProposal(id,-1)}><ChevronUp size={15}/></button><button disabled={i===proposalOrder.length-1} aria-label={'Move '+source.title+' down'} onClick={()=>shiftProposal(id,1)}><ChevronDown size={15}/></button></div>}</div>{idea&&<div className="proposalSteps"><label><input type="checkbox" checked={proposalChosen.includes(id)} onChange={e=>setProposalChosen(old=>e.target.checked?[...old,id]:old.filter(x=>x!==id))}/> Expand task</label>{proposalChosen.includes(id)&&idea.steps.map((st,j)=><div key={j} className="proposalStep"><span>{st.title}</span>{showEstimates&&<small>{st.minutes}m</small>}</div>)}</div>}</div>})}</div>
+ <div className="proposalActions"><button className="secondary" onClick={()=>setProposal(null)}>Cancel</button><button className="primary" onClick={applyReorganization}>Apply plan</button></div></div>}
  <div className="taskList">{visibleTasks.length===0&&!showDone?<p className="empty">Nothing outstanding right now. Add a task or start with a journal entry.</p>:null}
  {(showDone?tasks.filter(t=>!t.deferredUntil||t.deferredUntil<=localDate()):visibleTasks).map(t=><article className={'taskBlock taskCompact '+(t.done?'taskDone':'')+(finishingIds.includes(t.id)?' isFinishing':'')+(leavingIds.includes(t.id)?' isLeaving':'')} key={t.id}>
  <div className="task">
@@ -63,6 +135,8 @@ function App(){const[page,setPage]=useState<Page>('today'),[tasks,setTasks]=useS
  {!t.done&&<button className="startTask focusButton" onClick={()=>beginTask(t.id)} title="Start focus" aria-label={'Focus on '+t.title}><Play size={16}/></button>}
  <details className="taskMenu"><summary title={'More actions for '+t.title} aria-label={'More actions for '+t.title}><MoreHorizontal size={19}/></summary><div className="taskMenuPanel">
  {!t.done&&<><button onClick={()=>{setEditing(t.id);setEditText(t.title)}}><Pencil size={15}/> Edit</button><button onClick={()=>moveTask(t.id,-1)}><ArrowUp size={15}/> Move up</button><button onClick={()=>moveTask(t.id,1)}><ArrowDown size={15}/> Move down</button><button onClick={()=>postpone(t,1)}><CalendarClock size={15}/> Tomorrow</button><button onClick={()=>postpone(t,7)}><Clock3 size={15}/> Later</button></>}
+ {!t.done&&<button onClick={()=>openReorganization(t.id)}><RefreshCcw size={15}/> Expand task</button>}
+ {t.planExpanded&&<button onClick={()=>collapsePlan(t)}><ChevronUp size={15}/> Collapse plan</button>}
  <button className="destructive" onClick={()=>removeTask(t)}><Trash2 size={15}/> Delete</button>
  </div></details>
  </div>
