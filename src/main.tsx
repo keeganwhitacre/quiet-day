@@ -106,7 +106,7 @@ function App(){const[page,setPage]=useState<Page>('today'),[tasks,setTasks]=useS
      if(!task||task.updatedAt!==planUndo.appliedAt||task.done||task.deletedAt)
       throw new Error('A generated task was worked on. Undo is blocked to preserve progress.');
     }
-    for(const id of planUndo.createdIds)await db.tasks.delete(id);
+    for(const id of planUndo.createdIds)await db.tasks.update(id,{deletedAt:Date.now(),updatedAt:Date.now()});
     for(const original of planUndo.before)await db.tasks.put({...original,updatedAt:Date.now()});
    });
    setPlanUndo(null);await reload();
@@ -118,11 +118,11 @@ function App(){const[page,setPage]=useState<Page>('today'),[tasks,setTasks]=useS
    await db.transaction('rw',db.tasks,async()=>{
     const source=await db.tasks.get(t.planSourceId!);
     if(!source?.planArchived)throw new Error('Original task is no longer archived.');
-    const related=(await db.tasks.toArray()).filter(x=>x.planSourceId===source.id&&x.planBatchId===source.planBatchId);
+    const related=(await db.tasks.toArray()).filter(x=>x.planSourceId===source.id&&x.planBatchId===source.planBatchId&&!x.deletedAt);
     if(!related.length)throw new Error('No generated actions found.');
     if(related.some(x=>x.done||x.completedAt||x.deletedAt||x.updatedAt!==x.createdAt))
      throw new Error('These actions have been worked on. The original is preserved, but cannot be restored without losing progress.');
-    for(const child of related)await db.tasks.delete(child.id);
+    for(const child of related)await db.tasks.update(child.id,{deletedAt:Date.now(),updatedAt:Date.now()});
     await db.tasks.update(source.id,{planArchived:false,planBatchId:undefined,updatedAt:Date.now()});
    });
    setPlanUndo(null);await reload();
