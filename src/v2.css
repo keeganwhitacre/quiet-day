@@ -205,3 +205,71 @@ footer button,footer .import{color:var(--qd-muted)}
  .proposalPanel{padding:15px}
  .reorganizeControls{margin-bottom:15px}
 }
+
+
+/* Finishing pass — identical Today utilities, no special AI action pill. */
+.utilityBar button{background:transparent!important;border:1px solid var(--qd-line)!important;color:var(--qd-muted)!important;border-radius:999px!important;padding:10px 12px!important;display:inline-flex;align-items:center;gap:8px;font-size:12px}
+.utilityBar button:hover:not(:disabled){background:var(--qd-tint)!important;color:var(--qd-ink)!important}
+.utilityBar{margin-top:23px;gap:8px}
+.proposalPanel{margin:18px 0 10px}
+.reorganizeControls{display:none}
+
+/* Less bouncy document scrolling in installed iOS PWAs, without locking
+   normal long-page scroll or preventing scrolling in form controls. */
+html,body{overscroll-behavior-y:none}
+html.quiet-day-standalone,html.quiet-day-standalone body{overscroll-behavior:none}
+html.quiet-day-standalone{min-height:100%;background:var(--qd-bg)}
+body{min-height:100dvh;background:var(--qd-bg)}
+#root{min-height:100dvh;background:var(--qd-bg)}
+.stickyChrome{background:var(--qd-bg);background:color-mix(in srgb,var(--qd-bg) 96%,transparent)}
+/* iOS extends under its status bar when black-translucent is selected. */
+.stickyChrome{padding-top:env(safe-area-inset-top,0px)}
+
+/* Focus is a workspace, not a separate timer app. */
+.focus{max-width:700px;margin:0 auto}
+.focus>.eyebrow{margin-bottom:9px;color:var(--qd-muted);font-size:11px}
+.focus h1{font-size:clamp(28px,5vw,36px);line-height:1.19;letter-spacing:-1.1px;margin-bottom:0}
+.focusArcWrap{margin:17px auto 11px}
+.focusArc{width:186px;height:186px}
+.focusArcTrack,.focusArcProgress{stroke-width:4}
+.focusArcLabel{font-size:14px}
+.focus .focusActions{margin:0 auto;display:flex;align-items:center;justify-content:center;gap:8px;flex-wrap:wrap}
+.focus .focusActions button{font-size:12px;min-height:39px;padding:9px 13px;white-space:nowrap}
+.focus .progressBar{margin:15px auto 0}
+.focus .progressBar .secondary{border:0!important;color:var(--qd-muted);padding:8px 12px}
+.focus .progressBar .secondary:hover{background:var(--qd-accent-wash);color:var(--qd-accent)}
+.focus .focusChat{margin:22px auto 0;border-top:1px solid var(--qd-line);padding:9px 0 0}
+.focus .focusForm{margin-top:15px}
+.focus .finish{margin:21px auto 15px;gap:8px;display:flex;justify-content:center;flex-wrap:wrap}
+.focus .finish button{font-size:12px;min-height:36px;padding:8px 12px;color:var(--qd-muted)}
+.focus .stuck,.focus .checkIn{margin:15px auto;padding:16px}
+.focus .stuck h2,.focus .checkIn h2{font-size:14px}
+.focus .intro{margin:7px 0 0}
+@media(max-width:600px){
+  .focus{padding-top:22px}
+  .focus h1{font-size:clamp(25px,7vw,32px);overflow-wrap:anywhere}
+  .focusArcWrap{margin:15px auto 8px}
+  .focusArc{height:158px;width:158px}
+  .focusArcCenter{gap:3px}
+  .focusArcLabel{font-size:13px;max-width:118px}
+  .focusArcElapsed{font-size:10px}
+  .focus .focusActions{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));width:100%;gap:6px}
+  .focus .focusActions button{width:100%;min-width:0;min-height:43px;padding:8px 5px;font-size:12px;gap:5px;justify-content:center}
+  .focus .focusActions button svg{width:14px;height:14px;flex:none}
+  .focus .progressBar{margin:10px auto 0}
+  .focus .focusChat{margin-top:18px}
+  .focus .focusForm{margin-top:11px}
+  .focus .finish{margin:15px auto 12px}
+  .focus .finish button{padding:9px 12px}
+  .screen.focus{padding-bottom:calc(24px + env(safe-area-inset-bottom,0px))}
+}
+
+
+/* Standalone iPhone uses a bounded app viewport: only content scrolls.
+   This keeps dashboard chrome fixed and stops page-level pull-down displacement. */
+@media(max-width:700px){
+ html.quiet-day-standalone,html.quiet-day-standalone body,html.quiet-day-standalone #root{height:100%;overflow:hidden}
+ html.quiet-day-standalone .shell{height:100dvh;min-height:0;overflow:hidden;display:flex;flex-direction:column}
+ html.quiet-day-standalone .stickyChrome{position:relative;top:auto;flex:0 0 auto}
+ html.quiet-day-standalone main{flex:1 1 auto;min-height:0;overflow-y:auto;overflow-x:hidden;overscroll-behavior:none;-webkit-overflow-scrolling:touch;padding-bottom:env(safe-area-inset-bottom,0px)}
+}
