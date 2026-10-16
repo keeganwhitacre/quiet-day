@@ -112,6 +112,22 @@ function App(){const[page,setPage]=useState<Page>('today'),[tasks,setTasks]=useS
    setPlanUndo(null);await reload();
   }catch(e){setError(String(e))}
  };
+ const restoreSource=async(t:Task)=>{
+  if(!t.planSourceId)return;
+  try{
+   await db.transaction('rw',db.tasks,async()=>{
+    const source=await db.tasks.get(t.planSourceId!);
+    if(!source?.planArchived)throw new Error('Original task is no longer archived.');
+    const related=(await db.tasks.toArray()).filter(x=>x.planSourceId===source.id&&x.planBatchId===source.planBatchId);
+    if(!related.length)throw new Error('No generated actions found.');
+    if(related.some(x=>x.done||x.completedAt||x.deletedAt||x.updatedAt!==x.createdAt))
+     throw new Error('These actions have been worked on. The original is preserved, but cannot be restored without losing progress.');
+    for(const child of related)await db.tasks.delete(child.id);
+    await db.tasks.update(source.id,{planArchived:false,planBatchId:undefined,updatedAt:Date.now()});
+   });
+   setPlanUndo(null);await reload();
+  }catch(e){setError(String(e))}
+ };
  const collapsePlan=async(t:Task)=>{
   if(!t.planExpanded||!t.planOriginal)return;
   const original=t.planOriginal;
@@ -147,6 +163,7 @@ function App(){const[page,setPage]=useState<Page>('today'),[tasks,setTasks]=useS
  {!t.done&&<><button onClick={()=>{setEditing(t.id);setEditText(t.title)}}><Pencil size={15}/> Edit</button><button onClick={()=>moveTask(t.id,-1)}><ArrowUp size={15}/> Move up</button><button onClick={()=>moveTask(t.id,1)}><ArrowDown size={15}/> Move down</button><button onClick={()=>postpone(t,1)}><CalendarClock size={15}/> Tomorrow</button><button onClick={()=>postpone(t,7)}><Clock3 size={15}/> Later</button></>}
  {!t.done&&<button onClick={()=>openReorganization(t.id)}><RefreshCcw size={15}/> Expand task</button>}
  {t.planExpanded&&<button onClick={()=>collapsePlan(t)}><ChevronUp size={15}/> Collapse plan</button>}
+ {t.planSourceId&&<button onClick={()=>restoreSource(t)}><ArrowLeft size={15}/> Restore original</button>}
  <button className="destructive" onClick={()=>removeTask(t)}><Trash2 size={15}/> Delete</button>
  </div></details>
  </div>
