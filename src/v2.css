@@ -166,3 +166,42 @@ footer button,footer .import{color:var(--qd-muted)}
 .importSettings{position:relative;cursor:pointer;display:inline-flex;align-items:center;gap:8px;font-size:13px;padding:12px 17px}
 .importSettings input{display:none}
 .shell{min-height:100dvh}
+
+
+/* Keep the small personal header and navigation reachable on long pages. */
+.stickyChrome{position:sticky;top:0;z-index:250;background:var(--qd-bg);background:color-mix(in srgb,var(--qd-bg) 93%,transparent);-webkit-backdrop-filter:blur(18px);backdrop-filter:blur(18px);padding-bottom:12px;border-bottom:1px solid transparent}
+.stickyChrome header{height:66px}
+.stickyChrome .workspaceNav{margin:0 auto}
+.stickyChrome:has(+main .screen){border-bottom-color:var(--qd-line)}
+@supports(padding:max(0px)){
+ .stickyChrome{padding-top:env(safe-area-inset-top,0px);top:0}
+}
+.reorganizeControls{display:flex;align-items:center;gap:14px;margin:0 0 18px;flex-wrap:wrap}
+.organizeTrigger{font-size:12px;padding:9px 15px}
+.undoPlan{border:0;background:transparent;color:var(--qd-accent);font-size:12px;padding:8px}
+.proposalPanel{border:1px solid var(--qd-line);background:var(--qd-surface);box-shadow:var(--qd-shadow);border-radius:20px;padding:18px;margin:0 0 23px}
+.proposalHeading{display:flex;justify-content:space-between;gap:12px;align-items:flex-start}
+.proposalHeading h2{font-size:16px;margin:0;color:var(--qd-ink)}
+.proposalHeading .small{margin:7px 0 10px}
+.proposalEstimate{display:flex;align-items:center;gap:9px;font-size:12px;color:var(--qd-muted);margin:10px 0 14px}
+.proposalPanel input[type=checkbox]{accent-color:var(--qd-accent)}
+.proposalRow{padding:13px 0;border-top:1px solid var(--qd-line)}
+.proposalRowHeader{display:flex;gap:13px;align-items:center}
+.proposalNumber{font-size:12px;color:var(--qd-muted);width:14px;text-align:center;flex:none}
+.proposalRowText{flex:1;min-width:0;display:flex;flex-direction:column;gap:3px}
+.proposalRowText strong{font-size:13px;color:var(--qd-ink);font-weight:570}
+.proposalContext{font-size:11px;color:var(--qd-muted)}
+.proposalMove{display:flex;gap:2px}
+.proposalMove button{background:transparent;border:0;color:var(--qd-muted);border-radius:50%;height:28px;width:28px;display:grid;place-items:center}
+.proposalMove button:hover{color:var(--qd-accent);background:var(--qd-accent-wash)}
+.proposalSteps{padding:10px 2px 0 27px;display:flex;flex-direction:column;gap:8px}
+.proposalSteps label{font-size:12px;display:flex;align-items:center;gap:8px;color:var(--qd-accent)}
+.proposalStep{display:flex;justify-content:space-between;gap:10px;padding:4px 0 4px 24px;font-size:12px;color:var(--qd-ink)}
+.proposalStep small{font-size:11px;color:var(--qd-muted);white-space:nowrap}
+.proposalActions{display:flex;justify-content:flex-end;gap:9px;padding-top:17px}
+@media(max-width:600px){
+ .stickyChrome header{height:55px}
+ .stickyChrome{padding-bottom:9px}
+ .proposalPanel{padding:15px}
+ .reorganizeControls{margin-bottom:15px}
+}
