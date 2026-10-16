@@ -263,3 +263,13 @@ body{min-height:100dvh;background:var(--qd-bg)}
   .focus .finish button{padding:9px 12px}
   .screen.focus{padding-bottom:calc(24px + env(safe-area-inset-bottom,0px))}
 }
+
+
+/* Standalone iPhone uses a bounded app viewport: only content scrolls.
+   This keeps dashboard chrome fixed and stops page-level pull-down displacement. */
+@media(max-width:700px){
+ html.quiet-day-standalone,html.quiet-day-standalone body,html.quiet-day-standalone #root{height:100%;overflow:hidden}
+ html.quiet-day-standalone .shell{height:100dvh;min-height:0;overflow:hidden;display:flex;flex-direction:column}
+ html.quiet-day-standalone .stickyChrome{position:relative;top:auto;flex:0 0 auto}
+ html.quiet-day-standalone main{flex:1 1 auto;min-height:0;overflow-y:auto;overflow-x:hidden;overscroll-behavior:none;-webkit-overflow-scrolling:touch;padding-bottom:env(safe-area-inset-bottom,0px)}
+}
