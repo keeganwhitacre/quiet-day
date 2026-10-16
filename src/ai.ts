@@ -19,3 +19,29 @@ export async function makePlan(key:string,journal:string,existing:{id:string;tit
 export async function helpBegin(key:string,task:string,barrier:string){return generate(key,'You are a concise task-start assistant. Offer ONE practical physical first action for the task and the stated barrier in at most 65 words. No therapy language, compliments, generic encouragement, or slogans.',{task,barrier});}
 
 export async function focusReply(key:string,task:string,firstStep:string,subtasks:{title:string;done:boolean}[],conversation:{role:string;text:string}[],userText:string){return generate(key,'You are an action-oriented task partner. Follow the user\'s task progress and previous chat. Ask at most one focused question or propose one specific physical next action. No generic praise, therapy language or verbosity; at most 75 words. For being stuck, identify the barrier and reduce it to something doable in two minutes. Never claim that you can monitor work when this page is closed.',{task,firstStep,subtasks,conversation:conversation.slice(-10),userText});}
+
+/** Review-only plan. This function never edits tasks. */
+export type ReorganizationStep={title:string;minutes:number};
+export type ReorganizationItem={id:string;steps:ReorganizationStep[]};
+export type ReorganizationProposal={order:string[];items:ReorganizationItem[]};
+export async function proposeReorganization(key:string,tasks:{id:string;title:string;priority?:string;firstStep?:string;minutes?:number;subtasks?:{title:string;done:boolean}[];sortOrder?:number}[],scope?:string):Promise<ReorganizationProposal>{
+ const input=scope?tasks.filter(t=>t.id===scope):tasks;
+ if(!input.length)throw new Error('No tasks to reorganize.');
+ const prompt='You help one person convert intimidating tasks into doable actions. Return JSON ONLY of shape {"order":["exact task id"],"items":[{"id":"exact task id","steps":[{"title":"small observable action","minutes":5}]}]}. order MUST contain every provided task id once, in a helpful execution order based on real dependencies, stated priorities, and effort. For a single task keep the supplied order. items ONLY for genuinely vague, broad or difficult tasks that benefit from decomposition; leave actionable errands and emails unchanged. Break complex tasks into 2-5 meaningful steps; no filler such as decide to start, make a list, prepare mentally, or work on it. A first step may be opening the relevant document, but it must lead to actual progress. Each step is an approachable session, not a promise to complete the whole project. No invented dates, obligations, or details. If a task already has subtasks, do NOT propose new steps for it: preserve existing progress. Do not split everything. Duration estimates are optional user-facing guidance and are NOT deadlines. No therapy language. JSON only.';
+ const raw=await generate(key,prompt,{tasks:input});
+ let x:any;try{x=JSON.parse(raw.replace(/^\x60\x60\x60(?:json)?\s*|\s*\x60\x60\x60$/g,''))}catch{throw new Error('AI returned an invalid plan. Try again.')}
+ const ids=new Set(input.map(t=>t.id));
+ if(!Array.isArray(x.order)||!Array.isArray(x.items))throw new Error('Invalid plan format.');
+ const order=x.order.filter((v:unknown)=>typeof v==='string'&&ids.has(v));
+ if(order.length!==ids.size||new Set(order).size!==ids.size)throw new Error('AI did not return a complete task order. Try again.');
+ const used=new Set<string>();
+ const items:ReorganizationItem[]=x.items.filter((v:any)=>v&&typeof v.id==='string'&&ids.has(v.id)&&Array.isArray(v.steps)).flatMap((v:any)=>{
+  if(used.has(v.id))return [];
+  used.add(v.id);
+  const original=input.find(t=>t.id===v.id);
+  if(original?.subtasks?.length)return [];
+  const steps:ReorganizationStep[]=v.steps.slice(0,5).filter((st:any)=>st&&typeof st.title==='string'&&st.title.trim()).map((st:any)=>({title:st.title.trim().slice(0,160),minutes:Math.min(90,Math.max(2,Math.round(Number(st.minutes)||10)))}));
+  return steps.length>=2?[{id:v.id,steps}]:[];
+ });
+ return {order,items};
+}
