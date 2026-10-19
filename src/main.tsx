@@ -21,7 +21,7 @@ function App(){const[page,setPage]=useState<Page>('today'),[tasks,setTasks]=useS
  const stopFocus=()=>{pauseFocus();setSeconds(0);setFocusFinished(false);setCheckIn(false);setStuck(false);setFocusHelpOpen(false);setSelected(null);setPage('today')};
  const remainingFocus=Math.max(0,sessionMinutes*60-seconds);
  const focusFraction=remainingFocus/(sessionMinutes*60);
- const focusR=42,focusCirc=2*Math.PI*focusR;
+ const focusR=17.5,focusCirc=2*Math.PI*focusR;
  const dialTicks=Array.from({length:60},(_,i)=>i);
 
  const addTask=async(raw:string,source?:string)=>{const title=raw.trim();if(!title)return;const now=Date.now();await db.tasks.add({id:uid(),title,done:false,createdAt:now,updatedAt:now,source,sortOrder:now});await reload();};
@@ -196,7 +196,7 @@ function App(){const[page,setPage]=useState<Page>('today'),[tasks,setTasks]=useS
  {dialTicks.map(i=><line key={i} x1="50" y1={i%5===0?"4":"6.2"} x2="50" y2={i%5===0?"9":"8"} className={i%5===0?'dialTick dialTickMajor':'dialTick'} transform={'rotate('+i*6+' 50 50)'}/>)}
  <circle cx="50" cy="50" r={focusR} className="dialElapsed"/>
  <circle cx="50" cy="50" r={focusR} className="dialRemaining" style={{strokeDasharray:focusCirc,strokeDashoffset:focusCirc*(1-focusFraction)}} transform="rotate(-90 50 50)"/>
- {Array.from({length:12},(_,i)=><text key={i} x="50" y="16" textAnchor="middle" className="dialNumber" transform={'rotate('+i*30+' 50 50)'}><tspan transform={'rotate('+(-i*30)+' 50 15)'}>{i===0?'0':i*5}</tspan></text>)}
+ {Array.from({length:12},(_,i)=><text key={i} x={50+39*Math.sin(i*Math.PI/6)} y={50-39*Math.cos(i*Math.PI/6)+1.2} textAnchor="middle" className="dialNumber">{i===0?'0':i*5}</text>)}
  </svg>
  <div className="focusDialCenter"><span>{focusFinished?'Finished':active?'Focusing':seconds>0?'Paused':'Ready'}</span></div>
  </div>
