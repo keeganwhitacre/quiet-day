@@ -21,8 +21,7 @@ function App(){const[page,setPage]=useState<Page>('today'),[tasks,setTasks]=useS
  const stopFocus=()=>{pauseFocus();setSeconds(0);setFocusFinished(false);setCheckIn(false);setStuck(false);setFocusHelpOpen(false);setSelected(null);setPage('today')};
  const remainingFocus=Math.max(0,sessionMinutes*60-seconds);
  const focusFraction=remainingFocus/(sessionMinutes*60);
- const focusR=17.5,focusCirc=2*Math.PI*focusR;
- const dialTicks=Array.from({length:60},(_,i)=>i);
+ const focusR=22,focusCirc=2*Math.PI*focusR;
 
  const addTask=async(raw:string,source?:string)=>{const title=raw.trim();if(!title)return;const now=Date.now();await db.tasks.add({id:uid(),title,done:false,createdAt:now,updatedAt:now,source,sortOrder:now});await reload();};
  const saveEntry=async()=>{if(!draft.trim())return;const id=uid();await db.entries.add({id,date:localDate(),text:draft.trim(),createdAt:Date.now()});setDraft('');await reload();setPage('today');};
@@ -191,16 +190,21 @@ function App(){const[page,setPage]=useState<Page>('today'),[tasks,setTasks]=useS
  <div className="proposalRows">{proposalOrder.flatMap(id=>{const source=tasks.find(t=>t.id===id);if(!source)return [];const idea=proposal.items.find(x=>x.id===id);const selected=!!idea&&proposalChosen.includes(id);return [{id,source,idea,selected}]}).map(({id,source,idea,selected},i)=><div className="proposalRow" key={id}><div className="proposalRowHeader"><div className="proposalRowText"><strong>{selected?source.title:source.title}</strong>{idea&&<span className="proposalContext">{selected?'Replace with the actions below':'Keep original'}</span>}</div>{!proposalScope&&<div className="proposalMove"><button disabled={i===0} aria-label={'Move '+source.title+' up'} onClick={()=>shiftProposal(id,-1)}><ChevronUp size={15}/></button><button disabled={i===proposalOrder.length-1} aria-label={'Move '+source.title+' down'} onClick={()=>shiftProposal(id,1)}><ChevronDown size={15}/></button></div>}</div>{idea&&<label className="proposalReplace"><input type="checkbox" checked={selected} onChange={e=>setProposalChosen(old=>e.target.checked?[...old,id]:old.filter(x=>x!==id))}/> Replace with actions</label>}{selected&&idea&&<div className="proposalFlatSteps">{idea.steps.map((step,j)=><div className="proposalFlatRow" key={j}><span className="proposalFlatCircle"/><span>{step.title}</span>{showEstimates&&<small>{step.minutes}m</small>}</div>)}</div>}</div>)}</div>
  <div className="proposalActions"><button className="secondary" onClick={()=>setProposal(null)}>Cancel</button><button className="primary" onClick={applyReorganization}>Apply plan</button></div></div>}{evening&&<div className="eveningPanel"><h2>Evening</h2><p>{tasks.filter(t=>t.done).length} completed · {visibleTasks.length} open</p><textarea rows={3} value={eveningNote} onChange={e=>setEveningNote(e.target.value)} placeholder="Anything worth remembering for tomorrow?"/><button className="primary" onClick={saveEvening} disabled={!eveningNote.trim()}>Save note</button></div>}</section>}
  {page==='focus'&&<section className={'screen focus focusImmersive screenSlide '+navDirection} key="focus">{current?<><div className="focusHeading"><p className="eyebrow">Focus</p><h1>{current.title}</h1>{current.progressNote&&<p className="muted intro">Last: {current.progressNote}</p>}</div>
- <div className="focusDialArea"><div className="focusDial" role="img" aria-label={Math.ceil(remainingFocus/60)+' minutes remaining in '+sessionMinutes+' minute session'}>
- <svg className="focusDialSvg" viewBox="0 0 100 100" aria-hidden="true"><circle cx="50" cy="50" r="42" className="dialFace"/>
- {dialTicks.map(i=><line key={i} x1="50" y1={i%5===0?"4":"6.2"} x2="50" y2={i%5===0?"9":"8"} className={i%5===0?'dialTick dialTickMajor':'dialTick'} transform={'rotate('+i*6+' 50 50)'}/>)}
- <circle cx="50" cy="50" r={focusR} className="dialElapsed"/>
- <circle cx="50" cy="50" r={focusR} className="dialRemaining" style={{strokeDasharray:focusCirc,strokeDashoffset:focusCirc*(1-focusFraction)}} transform="rotate(-90 50 50)"/>
- {Array.from({length:12},(_,i)=><text key={i} x={50+39*Math.sin(i*Math.PI/6)} y={50-39*Math.cos(i*Math.PI/6)+1.2} textAnchor="middle" className="dialNumber">{i===0?'0':i*5}</text>)}
- </svg>
- <div className="focusDialCenter"><span>{focusFinished?'Finished':active?'Focusing':seconds>0?'Paused':'Ready'}</span></div>
+ <div className="focusDialArea"><div className={'focusDial '+(active?'isActive':seconds>0?'isPaused':'isReady')} role="img" aria-label={Math.ceil(remainingFocus/60)+' minutes remaining in '+sessionMinutes+' minute session'}>
+ <div className="focusDialBezel">
+  <svg className="focusDialSvg" viewBox="0 0 100 100" aria-hidden="true">
+   <defs>
+    <linearGradient id="focus-blue-sector" x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stopColor="#8facd7"/><stop offset="100%" stopColor="#5d82be"/></linearGradient>
+   </defs>
+   <circle cx="50" cy="50" r="44" className="dialFace"/>
+   <circle cx="50" cy="50" r={focusR} className="dialElapsed"/>
+   <circle cx="50" cy="50" r={focusR} className="dialRemaining" style={{strokeDasharray:focusCirc,strokeDashoffset:focusCirc*(1-focusFraction)}} transform="rotate(-90 50 50)"/>
+   <circle cx="50" cy="50" r="2.7" className="dialPivot"/>
+  </svg>
  </div>
- <div className="focusDuration" aria-label="Focus session length">
+ </div>
+ <div className="focusDialStatus">{focusFinished?'Session complete':active?'Focusing':seconds>0?'Paused':'Ready'}<span>{Math.ceil(remainingFocus/60)} min remaining</span></div>
+  <div className="focusDuration" aria-label="Focus session length">
  {(!active&&seconds===0)?<div className="focusLengths">{[10,20,30,60].map(m=><button key={m} className={sessionMinutes===m?'chosen':''} onClick={()=>{setSessionMinutes(m);setFocusFinished(false)}}>{m}m</button>)}</div>:<span>{focusFinished?'Session complete':sessionMinutes+' min session'}</span>}
  </div></div>
  <div className="focusPrimaryActions">
