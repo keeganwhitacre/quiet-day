@@ -283,3 +283,63 @@ body{min-height:100dvh;background:var(--qd-bg)}
 .proposalFlatRow>span:nth-child(2){flex:1;line-height:1.45}
 .proposalFlatCircle{height:16px;width:16px;flex:none;border:1.5px solid var(--qd-muted);border-radius:50%}
 .proposalFlatRow small{color:var(--qd-muted);font-size:11px}
+
+
+/* Focus — a quiet, immersive, flat visual timer. No physical clock frame. */
+.focusImmersive{width:100%;max-width:700px;display:flex;flex-direction:column;align-items:stretch;margin:0 auto;padding-top:24px}
+.focusImmersive .focusHeading{text-align:center;margin:0 auto;max-width:620px}
+.focusImmersive .focusHeading h1{text-align:center;font-size:clamp(23px,5.6vw,35px);line-height:1.2;overflow-wrap:anywhere}
+.focusImmersive .focusHeading .eyebrow{margin:0 0 7px}
+.focusImmersive .focusHeading .intro{text-align:center;margin:9px auto 0}
+.focusDialArea{display:flex;align-items:center;flex-direction:column;justify-content:center;margin:16px auto 0;max-width:100%}
+.focusDial{width:min(68vw,340px);aspect-ratio:1;position:relative;display:grid;place-items:center;overflow:visible}
+.focusDialSvg{width:100%;height:100%;overflow:visible}
+.dialFace{fill:var(--qd-surface);stroke:var(--qd-line);stroke-width:1.5}
+.dialElapsed{fill:none;stroke:var(--qd-tint);stroke-width:35}
+.dialRemaining{fill:none;stroke:#6c90c8;stroke-width:35;stroke-linecap:butt;transition:stroke-dashoffset .35s linear}
+[data-theme=dark] .dialRemaining{stroke:#83a9e0}
+.dialTick{stroke:var(--qd-muted);stroke-width:.45;opacity:.55}
+.dialTickMajor{stroke-width:.8;opacity:.75}
+.dialNumber{font-size:3.2px;fill:var(--qd-ink);font-weight:600;dominant-baseline:middle;font-variant-numeric:tabular-nums}
+.focusDialCenter{position:absolute;inset:35%;display:grid;place-items:center;pointer-events:none}
+.focusDialCenter span{font-size:13px;font-weight:650;color:var(--qd-ink);letter-spacing:-.3px;text-align:center}
+.focusDuration{height:32px;margin:10px auto 2px;color:var(--qd-muted);font-size:12px;display:flex;justify-content:center;align-items:center}
+.focusLengths{display:flex;gap:5px;background:var(--qd-tint);border-radius:999px;padding:3px}
+.focusLengths button{border:0;border-radius:999px;padding:6px 12px;font-size:12px;color:var(--qd-muted);background:transparent}
+.focusLengths button.chosen{background:var(--qd-surface);color:var(--qd-ink);box-shadow:0 2px 7px rgba(25,40,80,.07)}
+.focusImmersive .focusPrimaryActions{margin:13px auto 0;display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:9px;width:min(100%,460px)}
+.focusPrimaryActions button{min-width:0;min-height:45px;display:flex;align-items:center;justify-content:center;gap:7px;border-radius:999px!important;font-size:13px;padding:10px 12px}
+.focusPrimaryActions button.stopFocus{color:var(--qd-muted)}
+.focusImmersive .focusMore{display:flex;justify-content:center;gap:14px;margin:15px auto 0;flex-wrap:wrap}
+.focusMore button{background:transparent;border:0;color:var(--qd-muted);border-radius:999px;padding:9px 12px;font-size:12px;display:flex;align-items:center;gap:6px}
+.focusMore button:hover{background:var(--qd-tint);color:var(--qd-ink)}
+.focusImmersive .focusAssistance{width:min(100%,600px);margin:12px auto 0}
+.focusAssistance .focusChat{border-top:1px solid var(--qd-line);margin:0;padding:9px 0}
+.focusAssistance .focusForm{margin:13px 0 0}
+.focusAssistance .stuck{max-width:none;margin:4px 0 12px;display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.focusAssistance .stuck select{flex:1;min-width:150px}
+.focusImmersive .focusReflection{margin:15px auto 0;width:100%;max-width:600px}
+.focusImmersive .focusDone{margin:24px auto 4px}
+.focusDone button{display:flex;align-items:center;gap:7px;background:transparent;border:0;border-radius:999px;color:var(--qd-muted);font-size:12px;padding:8px 12px}
+.focusDone button:hover{color:var(--qd-ink);background:var(--qd-tint)}
+@media(max-width:600px){
+ .screen.focusImmersive{padding-top:17px;padding-bottom:calc(20px + env(safe-area-inset-bottom,0px))}
+ .focusImmersive .focusHeading h1{font-size:clamp(23px,6.4vw,30px)}
+ .focusDialArea{margin-top:10px}
+ .focusDial{width:min(71vw,300px)}
+ .focusDialCenter span{font-size:11px}
+ .focusDuration{margin-top:5px}
+ .focusImmersive .focusPrimaryActions{gap:6px;margin-top:8px}
+ .focusPrimaryActions button{min-height:43px;padding:8px 5px;font-size:12px;gap:5px}
+ .focusPrimaryActions button svg{height:15px;width:15px;flex:none}
+ .focusImmersive .focusMore{gap:5px;margin-top:9px}
+ .focusMore button{font-size:11px;padding:8px}
+ .focusImmersive .focusDone{margin-top:15px}
+}
+@media(max-height:700px) and (max-width:600px){
+ .focusDial{width:min(53vw,220px)}
+ .focusDialArea{margin-top:4px}
+ .focusDuration{margin-top:0}
+ .focusImmersive .focusDone{margin-top:8px}
+}
+@media(prefers-reduced-motion:reduce){.dialRemaining{transition:none}}
